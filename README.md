@@ -1,1 +1,1 @@
-# wikicat
+# `wikicat`: A Python toolkit for managing and navigating graphs of Wikipedia categories
