@@ -15,6 +15,7 @@ import json
 from pathlib import Path
 
 from .. import standardize
+from ..constants import ARTICLE, CATEGORY
 
 
 def generate_graph(df) -> dict:
@@ -49,7 +50,7 @@ def generate_graph(df) -> dict:
     -----
     - <id> is a string (the curid used by Wikipedia)
     - <title> is a string (the standardized title used by Wikipedia)
-    - <type> is a string, either "category" or "article"
+    - <type> is an int, either 0 (article) or 14 (category)
     """
     df = df.copy()
 
@@ -57,13 +58,13 @@ def generate_graph(df) -> dict:
     df["page_title"] = df["page_title"].apply(standardize)
     df["cl_to"] = df["cl_to"].apply(standardize)
     df["cl_type"] = (
-        df["cl_type"].str.replace("subcat", "category").str.replace("page", "article")
+        df["cl_type"].str.replace("subcat", CATEGORY).str.replace("page", ARTICLE)
     )
 
     # Get id to title mapping, and title to id mapping, and id to type mapping
     id_to_title = df.set_index("page_id")["page_title"].to_dict()
     id_to_namespace = df.set_index("page_id")["cl_type"].to_dict()
-    title_to_id = {"category": {}, "article": {}}
+    title_to_id = {CATEGORY: {}, ARTICLE: {}}
 
     for id_, title in id_to_title.items():
         page_type = id_to_namespace[id_]
@@ -71,28 +72,27 @@ def generate_graph(df) -> dict:
 
     # Remove missing titles
     cl_to = set(df["cl_to"])
-    cat_titles = set(title_to_id["category"].keys())
+    cat_titles = set(title_to_id[CATEGORY].keys())
     missing_cats = cl_to - cat_titles
     df = df[~df["cl_to"].isin(missing_cats)]
 
     # Create new column of the IDs of the linked parent
-    df["cl_id"] = df["cl_to"].apply(lambda title: title_to_id["category"][title])
+    df["cl_id"] = df["cl_to"].apply(lambda title: title_to_id[CATEGORY][title])
 
+    def encode_data(data):
+        return " ".join([str(x) for x in list(data)])
+    
     # Create children to parents mapping and parents to children mapping
-    children_to_parents = df.groupby("page_id")["cl_id"].apply(list).to_dict()
-    parents_to_children = df.groupby("cl_id")["page_id"].apply(list).to_dict()
+    children_to_parents = (
+        df.groupby("page_id")["cl_id"].apply(encode_data).to_dict()
+    )
+    parents_to_children = (
+        df.groupby("cl_id")["page_id"].apply(encode_data).to_dict()
+    )
 
-    # Conver to strings
-    id_to_title = {str(k): v for k, v in id_to_title.items()}
-    id_to_namespace = {str(k): v for k, v in id_to_namespace.items()}
-    for namespace in title_to_id:
-        title_to_id[namespace] = {k: str(v) for k, v in title_to_id[namespace].items()}
-    children_to_parents = {
-        str(k): [str(v) for v in v] for k, v in children_to_parents.items()
-    }
-    parents_to_children = {
-        str(k): [str(v) for v in v] for k, v in parents_to_children.items()
-    }
+    # Convert to strings
+    id_to_title = {k: v for k, v in id_to_title.items()}
+    id_to_namespace = {k: v for k, v in id_to_namespace.items()}
 
     # Save the JSON file
     graph_json = dict(
