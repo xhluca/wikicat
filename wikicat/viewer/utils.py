@@ -2,6 +2,7 @@ from collections import deque
 
 import dash
 from .. import CategoryGraph, Page
+from ..constants import ARTICLE, CATEGORY
 
 
 def bfs_with_backlinks(cg: CategoryGraph, article: Page, target: Page):
@@ -49,8 +50,8 @@ def insert_artificial_root_node(cg: CategoryGraph, root_id: str):
     """
     cg.id_to_title[root_id] = root_id
     cg.id_to_namespace[root_id] = "category"
-    cg.title_to_id["category"][root_id] = root_id
-    cg.parents_to_children[root_id] = cg.get_top_level_categories(return_as="id")
-    cg.children_to_parents[root_id] = []
+    cg.title_to_id[CATEGORY][root_id] = root_id
+    cg.parents_to_children[root_id] = " ".join(cg.get_top_level_categories(return_as="id"))
+    cg.children_to_parents[root_id] = ""
 
     return cg

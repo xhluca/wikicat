@@ -4,6 +4,7 @@ import unicodedata
 from .constants import (
     ARTICLE,
     CATEGORY,
+    TOP_LEVEL_CATEGORIES
 )
 
 ACCEPTED_NAMESPACES = ("article", "category")
@@ -809,3 +810,11 @@ class CategoryGraph:
                 self.__autoconvert_list_of_ids(page_ids, return_as)
                 for page_ids in all_page_ids
             ]
+
+    def get_top_level_categories(self, return_as="page"):
+        categories = [
+            self.get_page_from_title(title, namespace="category").id
+            for title in TOP_LEVEL_CATEGORIES
+        ]
+
+        return self.__autoconvert_list_of_ids(categories, return_as)

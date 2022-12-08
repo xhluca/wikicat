@@ -8,6 +8,7 @@ from dash import Input, Output, State
 import dash_bootstrap_components as dbc
 
 from .. import standardize, CategoryGraph
+from ..constants import ARTICLE, CATEGORY
 from . import utils
 from . import components as comp
 
@@ -30,7 +31,7 @@ def build_app(cg: CategoryGraph, root, title="Wikipedia Categories Explorer", st
     md = comp.build_markdowns()
     sto = comp.build_stores(root.id)
     panel = comp.build_panel(btn, inp, md, dd.choose_tlc)
-    cards = comp.build_cards(cl)
+    cards = comp.build_cards(cl=cl, sw=sw)
     cards_column = comp.build_card_column(cards)
 
     # Build layout
@@ -49,7 +50,7 @@ def build_app(cg: CategoryGraph, root, title="Wikipedia Categories Explorer", st
 
         text = standardize(text)
 
-        if text in cg.title_to_id["article"]:
+        if text in cg.title_to_id[ARTICLE]:
             return True, False, False
         else:
             return False, True, True
