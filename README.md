@@ -60,9 +60,7 @@ python3 -m wikicat.processing.generate_graph --dump_name dump_<yyyymmdd>.db --sa
 The results will be saved in `~/.wikicat_data/category_graph_<yyyymmdd>.json`.
 
 
-## Viewer
-
-The `wikicat.viewer`  is an application that allows you to visually explore the Wikipedia category graph.
+## `wikicat.viewer`: an application to visually explore the category graph
 
 To install the viewer, run:
 
