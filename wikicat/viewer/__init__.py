@@ -13,30 +13,9 @@ from . import utils
 from . import components as comp
 
 
-def build_app(cg: CategoryGraph, root, title="Wikipedia Categories Explorer", style=dbc.themes.BOOTSTRAP) -> dash.Dash:
-    # Define app
-    app = dash.Dash(
-        __name__,
-        external_stylesheets=[style],
-        title=title,
-    )
-
-    # Build components
-    cyto_graph = comp.build_cytoscape_graph(root)
-    dd = comp.build_dropdowns(cg)
-    cl = comp.build_checklists()
-    btn = comp.build_buttons()
-    sw = comp.build_switches()
-    inp = comp.build_inputs()
-    md = comp.build_markdowns()
-    sto = comp.build_stores(root.id)
-    panel = comp.build_panel(btn, inp, md, dd.choose_tlc)
-    cards = comp.build_cards(cl=cl, sw=sw)
-    cards_column = comp.build_card_column(cards)
-
-    # Build layout
-    app.layout = comp.build_layout(cyto_graph, panel, cards_column, sto)
-
+def assign_callbacks(
+    app: dash.Dash, cg: CategoryGraph, cyto_graph, inp, btn, cl, sw, md, sto, dd, root
+):
     # Define callbacks
     @app.callback(
         Output(inp.choose_article, "valid"),
@@ -249,5 +228,43 @@ def build_app(cg: CategoryGraph, root, title="Wikipedia Categories Explorer", st
                     )
 
         return nodes + edges
+
+
+def build_app(
+    cg: CategoryGraph,
+    title="Wikipedia Categories Explorer",
+    style=dbc.themes.BOOTSTRAP,
+    **kwargs
+) -> dash.Dash:
+    ROOT_ID = "((ROOT))"
+    cg = utils.insert_artificial_root_node(cg, ROOT_ID)
+    root = cg.get_page_from_id(ROOT_ID)
+
+    # Define app
+    app = dash.Dash(
+        __name__,
+        external_stylesheets=[style],
+        title=title,
+        **kwargs
+    )
+
+    # Build components
+    cyto_graph = comp.build_cytoscape_graph(root)
+    dd = comp.build_dropdowns(cg)
+    cl = comp.build_checklists()
+    btn = comp.build_buttons()
+    sw = comp.build_switches()
+    inp = comp.build_inputs()
+    md = comp.build_markdowns()
+    sto = comp.build_stores(root.id)
+    panel = comp.build_panel(btn, inp, md, dd.choose_tlc)
+    cards = comp.build_cards(cl=cl, sw=sw)
+    cards_column = comp.build_card_column(cards)
+
+    # Build layout
+    app.layout = comp.build_layout(cyto_graph, panel, cards_column, sto)
+
+    # Assign callbacks to make app interactive
+    assign_callbacks(app, cg, cyto_graph, inp, btn, cl, sw, md, sto, dd, root)
 
     return app
