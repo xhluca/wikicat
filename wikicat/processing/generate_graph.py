@@ -109,8 +109,8 @@ def generate_graph(df) -> dict:
 def main(load_dir, save_dir, load_name, save_name):
     import pandas as pd
 
-    load_dir = Path(load_dir)
-    save_dir = Path(save_dir)
+    load_dir = Path(load_dir).expanduser()
+    save_dir = Path(save_dir).expanduser()
     save_dir.mkdir(exist_ok=True)
 
     raw_df = pd.read_csv(load_dir / load_name, na_filter=False)
@@ -131,10 +131,10 @@ def parse_args():
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument(
-        "--load_dir", type=str, help="Directory to load the raw CSV file from"
+        "--load_dir", type=str, help="Directory to load the raw CSV file from", default="~/.wikicat_data"
     )
     parser.add_argument(
-        "--save_dir", type=str, help="Directory to save the JSON file to"
+        "--save_dir", type=str, help="Directory to save the JSON file to", default="~/.wikicat_data"
     )
     parser.add_argument(
         "--load_name",
