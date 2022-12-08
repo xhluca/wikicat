@@ -36,7 +36,7 @@ def generate_graph(df) -> dict:
         The graph JSON file. It has the following structure:
         {
             "id_to_title": { <id>: <title>, ... },
-            "id_to_type": { <id>: <type>, ... },
+            "id_to_namespace": { <id>: <type>, ... },
             "title_to_id": {
                 "category": { <title>: <id>, ... },
                 "article": { <title>: <id>, ... },
@@ -62,11 +62,11 @@ def generate_graph(df) -> dict:
 
     # Get id to title mapping, and title to id mapping, and id to type mapping
     id_to_title = df.set_index("page_id")["page_title"].to_dict()
-    id_to_type = df.set_index("page_id")["cl_type"].to_dict()
+    id_to_namespace = df.set_index("page_id")["cl_type"].to_dict()
     title_to_id = {"category": {}, "article": {}}
 
     for id_, title in id_to_title.items():
-        page_type = id_to_type[id_]
+        page_type = id_to_namespace[id_]
         title_to_id[page_type][title] = id_
 
     # Remove missing titles
@@ -84,7 +84,7 @@ def generate_graph(df) -> dict:
 
     # Conver to strings
     id_to_title = {str(k): v for k, v in id_to_title.items()}
-    id_to_type = {str(k): v for k, v in id_to_type.items()}
+    id_to_namespace = {str(k): v for k, v in id_to_namespace.items()}
     for namespace in title_to_id:
         title_to_id[namespace] = {k: str(v) for k, v in title_to_id[namespace].items()}
     children_to_parents = {
@@ -97,7 +97,7 @@ def generate_graph(df) -> dict:
     # Save the JSON file
     graph_json = dict(
         id_to_title=id_to_title,
-        id_to_type=id_to_type,
+        id_to_namespace=id_to_type,
         title_to_id=title_to_id,
         children_to_parents=children_to_parents,
         parents_to_children=parents_to_children,
