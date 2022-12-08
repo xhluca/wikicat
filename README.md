@@ -1,5 +1,12 @@
 # `wikicat`: A Python toolkit for managing and navigating graphs of Wikipedia categories
 
+| ![](assets/interactive_network.jpg) | ![](assets/ui.jpg) |
+|:---:|:---:|
+| Interactive Network | UI for finegrained control |
+
+
+
+
 ## Processing
 
 The `wikicat.processing` module contains tools for processing the Wikipedia category graph.
