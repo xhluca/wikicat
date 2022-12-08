@@ -11,12 +11,13 @@ with open('wikicat/processing/requirements.txt') as f:
 
 
 setup(
-    name='simple-pip-example',
+    name='wikicat',
     version='0.0.1.dev0',
     author="Xing Han Lu",
     author_email="wikicat@xinghanlu.com",
-    url='xhluca.github.io/wikicat',
+    url='https://xhluca.github.io/wikicat',
     description='Toolkit for managing and navigating graphs of Wikipedia categories',
+    long_description=long_description,
     packages=find_packages(
         include=["wikicat*"],
         exclude=['tests*'],
@@ -25,8 +26,7 @@ setup(
         # dependencies here
     ],
     extras_require={
-        # For special installation, e.g. pip install simple-pip-example[dev]
-        'dev': ['black'],
+        'dev': ['black', 'wheel'],
         'viewer': viewer_requirements,
         'processing': processing_requirements,
     }
