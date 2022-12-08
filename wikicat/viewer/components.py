@@ -1,13 +1,10 @@
-import argparse
-from collections import deque
-import json
-from textwrap import dedent
 from typing import NamedTuple
 
-import dash
-from dash import dcc, html, Input, Output, State
+from dash import dcc, html
 import dash_cytoscape as cyto
 import dash_bootstrap_components as dbc
+
+from .. import CategoryGraph, Page
 
 
 class Checklists(NamedTuple):
@@ -51,7 +48,11 @@ def inline_div(children, **kwargs) -> html.Div:
     return html.Div(children, style={"display": "inline-block"}, **kwargs)
 
 
-def build_cytoscape_graph(root_node, id="cytoscape-graph") -> cyto.Cytoscape:
+def build_cytoscape_graph(root: Page, id="cytoscape-graph") -> cyto.Cytoscape:
+    root_node = {
+        "data": {"id": root.id, "label": root.title},
+        "classes": root.namespace + " root",
+    }
     default_stylesheet = [
         {
             "selector": ".root",
@@ -113,7 +114,7 @@ def build_cytoscape_graph(root_node, id="cytoscape-graph") -> cyto.Cytoscape:
     return cyto_graph
 
 
-def build_dropdowns(cg, id="dd-choose-tlc") -> Dropdowns:
+def build_dropdowns(cg: CategoryGraph, id="dd-choose-tlc") -> Dropdowns:
     return Dropdowns(
         choose_tlc=dbc.Select(
             id=id,

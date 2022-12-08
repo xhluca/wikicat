@@ -1,32 +1,34 @@
 import argparse
 import json
+from pathlib import Path
 from textwrap import dedent
 
 import dash
-from dash import html, Input, Output, State
+from dash import Input, Output, State
 import dash_bootstrap_components as dbc
 
 from .. import CategoryGraph, standardize
-from . import utils, components as comp
+from . import utils
+from . import components as comp
 
 
-def build_app() -> dash.Dash:
+def build_app(cg, root, title="Wikipedia Categories Explorer", style=dbc.themes.BOOTSTRAP) -> dash.Dash:
     # Define app
     app = dash.Dash(
         __name__,
-        external_stylesheets=[dbc.themes.BOOTSTRAP],
-        title="Wikipedia Categories Explorer",
+        external_stylesheets=[style],
+        title=title,
     )
 
     # Build components
-    cyto_graph = comp.build_cytoscape_graph(root_node)
+    cyto_graph = comp.build_cytoscape_graph(root)
     dd = comp.build_dropdowns(cg)
     cl = comp.build_checklists()
     btn = comp.build_buttons()
     sw = comp.build_switches()
     inp = comp.build_inputs()
     md = comp.build_markdowns()
-    sto = comp.build_stores(ROOT_ID)
+    sto = comp.build_stores(root.id)
     panel = comp.build_panel(btn, inp, md, dd.choose_tlc)
     cards = comp.build_cards(cl)
     cards_column = comp.build_card_column(cards)
@@ -161,7 +163,7 @@ def build_app() -> dash.Dash:
         stored_data,
     ):
         if utils.was_triggered(btn.reset_graph, "n_clicks"):
-            return [ROOT_ID]
+            return [root.id]
 
         if utils.was_triggered(btn.show_path, "n_clicks"):
             if chosen_article_name is None:
@@ -173,7 +175,7 @@ def build_app() -> dash.Dash:
             backlinks = utils.bfs_with_backlinks(cg, article, target)
             chain = utils.extract_chain(backlinks, article, target)
 
-            return [ROOT_ID] + chain
+            return [root.id] + chain
 
         if n_clicks_update is None:
             return dash.no_update
@@ -225,7 +227,7 @@ def build_app() -> dash.Dash:
                 "classes": page.namespace,
             }
 
-            if node["data"]["id"] == ROOT_ID:
+            if node["data"]["id"] == root.id:
                 node["classes"] += " root"
 
             nodes.append(node)
@@ -250,19 +252,39 @@ def build_app() -> dash.Dash:
     return app
 
 
-if __name__ == "__main__":
-    with open("data/wikicat/category_graph_20181220.json", "r") as f:
-        graph_json = json.load(f)
-
+def run(load_dir, load_name, port=8050, host="0.0.0.0", debug=True):
     # Load category graph and insert artificial root node
+    load_dir = Path(load_dir).expanduser()
     ROOT_ID = "((ROOT))"
-    cg = CategoryGraph(graph_json)
+    cg = CategoryGraph(load_dir / load_name)
     cg = utils.insert_artificial_root_node(cg, ROOT_ID)
     root = cg.page_from_id(ROOT_ID)
-    root_node = {
-        "data": {"id": ROOT_ID, "label": root.title},
-        "classes": root.namespace + " root",
-    }
 
-    app = build_app()
-    app.run_server(debug=True, port=8000, host="0.0.0.0")
+    # Build app and run
+    app = build_app(cg, root)
+    app.run_server(debug=debug, host=host, port=port)
+
+
+def build_parser():
+    parser = argparse.ArgumentParser(
+        description="""
+        Run a Dash app to explore a category graph.
+
+        The category graph is loaded from a JSON file.
+
+        The app is accessible at http://<host>:<port>
+        """,
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    parser.add_argument("--load_dir", type=str, default="~/.wikicat_data")
+    parser.add_argument("--load_name", type=str, default="category_graph_20181220.json")
+    parser.add_argument("--port", type=int, default=8050)
+    parser.add_argument("--host", type=str, default="0.0.0.0")
+    parser.add_argument("--debug", type=bool, default=True)
+
+    return parser
+
+if __name__ == "__main__":
+    parser = build_parser()
+    args = parser.parse_args()
+    run(**vars(args))
