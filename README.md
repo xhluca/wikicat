@@ -5,7 +5,7 @@
 | Interactive Network | UI for finegrained control |
 
 
-## API
+## Main API
 
 The main `wikicat` API allows you work with category graphs generated from a certain dump by Wikipedia. Once the dump is processed via `wikicat.processing`, you can easily navigate the graph using simple and clear Python code, all offline (i.e., you do not need to make web requests to Wikipedia). The API is designed to be as simple as possible, and is intended to be used by researchers and developers who want to work with the Wikipedia category graph.
 
@@ -76,6 +76,51 @@ python3 -m wikicat.viewer --load_name category_graph_<yyyymmdd>.json --port 8050
 
 Then, open your browser to `http://0.0.0.0:8050`.
 
+### Accessing components
+
+`wikicat.viewer` was built using [Dash](https://dash.plotly.com/), a Python framework for building web applications. The application is composed of several components, which can be accessed inside `wikicat.viewer.components`. For example, to access the `Network` component, you can run:
+
+```python
+import wikicat.viewer.components as comp
+
+# Build the network
+cytoscape_graph = comp.build_cytoscape_graph(...)
+
+# Build the right panel
+panel = comp.build_panel(...)
+```
+
+Those can be reused in your custom Dash application. You can also create your own component and add it to the viewer. For example:
+
+```python
+import wikicat.viewer as wcv
+
+# ...
+
+# Define app
+app = dash.Dash(__name__, external_stylesheets=[style], title=title, **kwargs)
+
+# Define your custom components
+def build_btn(...):
+    # ...
+
+# Build regular components
+cyto_graph = wcv.components.build_cytoscape_graph(root)
+# ...
+cards = wcv.components.build_cards(cl=cl, sw=sw)
+cards_column = wcv.components.build_card_column(cards)
+
+# Build layout
+app.layout = wcv.components.build_layout(...)
+
+# Assign callbacks to make app interactive
+wcv.components.assign_callbacks(app=app, ...)
+
+# Run app
+run(app=app, ...)
+```
+
+See the `wikicat.viewer.build_app()` function for more details.
 
 ## Warning
 
