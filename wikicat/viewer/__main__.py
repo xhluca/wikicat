@@ -1,26 +1,7 @@
 import argparse
-import json
-from pathlib import Path
-from textwrap import dedent
 
-import dash
-from dash import Input, Output, State
-import dash_bootstrap_components as dbc
+from . import run
 
-from .. import CategoryGraph, standardize
-from . import build_app
-from . import utils
-from . import components as comp
-
-
-def run(load_dir, load_name, port=8050, host="0.0.0.0", debug=True):
-    # Load category graph and insert artificial root node
-    load_dir = Path(load_dir).expanduser()
-    cg = CategoryGraph.read_json(load_dir / load_name)
-
-    # Build app and run
-    app = build_app(cg)
-    app.run_server(debug=debug, host=host, port=port)
 
 
 def build_parser():

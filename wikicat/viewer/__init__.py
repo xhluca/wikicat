@@ -1,5 +1,3 @@
-import argparse
-import json
 from pathlib import Path
 from textwrap import dedent
 
@@ -8,7 +6,7 @@ from dash import Input, Output, State
 import dash_bootstrap_components as dbc
 
 from .. import standardize, CategoryGraph
-from ..constants import ARTICLE, CATEGORY
+from ..constants import ARTICLE
 from . import utils
 from . import components as comp
 
@@ -234,19 +232,14 @@ def build_app(
     cg: CategoryGraph,
     title="Wikipedia Categories Explorer",
     style=dbc.themes.BOOTSTRAP,
-    **kwargs
+    **kwargs,
 ) -> dash.Dash:
     ROOT_ID = "((ROOT))"
     cg = utils.insert_artificial_root_node(cg, ROOT_ID)
     root = cg.get_page_from_id(ROOT_ID)
 
     # Define app
-    app = dash.Dash(
-        __name__,
-        external_stylesheets=[style],
-        title=title,
-        **kwargs
-    )
+    app = dash.Dash(__name__, external_stylesheets=[style], title=title, **kwargs)
 
     # Build components
     cyto_graph = comp.build_cytoscape_graph(root)
@@ -268,3 +261,15 @@ def build_app(
     assign_callbacks(app, cg, cyto_graph, inp, btn, cl, sw, md, sto, dd, root)
 
     return app
+
+
+def run(load_dir, load_name, port=8050, host="0.0.0.0", debug=True, app=None):
+    # Load category graph and insert artificial root node
+    load_dir = Path(load_dir).expanduser()
+    cg = CategoryGraph.read_json(load_dir / load_name)
+
+    # Build app and run
+    if app is None:
+        app = build_app(cg)
+
+    app.run_server(debug=debug, host=host, port=port)
