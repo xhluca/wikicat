@@ -97,7 +97,7 @@ def generate_graph(df) -> dict:
     # Save the JSON file
     graph_json = dict(
         id_to_title=id_to_title,
-        id_to_namespace=id_to_type,
+        id_to_namespace=id_to_namespace,
         title_to_id=title_to_id,
         children_to_parents=children_to_parents,
         parents_to_children=parents_to_children,
