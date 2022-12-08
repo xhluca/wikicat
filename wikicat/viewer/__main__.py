@@ -19,7 +19,7 @@ def run(load_dir, load_name, port=8050, host="0.0.0.0", debug=True):
     ROOT_ID = "((ROOT))"
     cg = CategoryGraph.read_json(load_dir / load_name)
     cg = utils.insert_artificial_root_node(cg, ROOT_ID)
-    root = cg.page_from_id(ROOT_ID)
+    root = cg.get_page_from_id(ROOT_ID)
 
     # Build app and run
     app = build_app(cg, root)

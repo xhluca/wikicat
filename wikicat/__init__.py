@@ -1,6 +1,64 @@
-import json
 from typing import Dict, List
 import unicodedata
+
+from .constants import (
+    ARTICLE,
+    CATEGORY,
+)
+
+ACCEPTED_NAMESPACES = ("article", "category")
+
+
+def _namespace_to_code(namespace: str) -> str:
+    """
+    Converts a namespace to its corresponding code.
+    If the namespace is already a code, it will be returned as-is.
+
+    Parameters
+    ----------
+    namespace
+        The namespace to convert.
+
+    Returns
+    -------
+    str
+        The code of the namespace.
+    """
+    if namespace == "article":
+        return ARTICLE
+    elif namespace == "category":
+        return CATEGORY
+    elif namespace in (ARTICLE, CATEGORY):
+        return namespace
+    else:
+        raise ValueError(f"Invalid namespace={namespace}. Must be one of: {ACCEPTED_NAMESPACES}.")
+
+
+def _code_to_namespace(code: str) -> str:
+    """
+    Converts a code to its corresponding namespace. If the code is already a
+    namespace, it will be returned as-is.
+
+    Parameters
+    ----------
+    code
+        The code to convert. Must be one of: "article", "category".
+
+    Returns
+    -------
+    str
+        The namespace of the code.
+    """
+    code = str(code)
+
+    if code == ARTICLE:
+        return "article"
+    elif code == CATEGORY:
+        return "category"
+    elif code in ACCEPTED_NAMESPACES:
+        return code
+    else:
+        raise ValueError(f"Invalid code={code}")
 
 
 def standardize(title: str, form: str = "NFC"):
@@ -37,15 +95,14 @@ class Page:
         """
         self.id = str(id)
         self.title = title
-        self.namespace = namespace
+        self.namespace = _code_to_namespace(namespace)
 
         if standardize_title:
             self.title = standardize(self.title)
 
-        accepted_namespaces = ("article", "category")
-        if namespace not in accepted_namespaces:
+        if self.namespace not in ACCEPTED_NAMESPACES:
             raise ValueError(
-                f"Incorrect namespace={namespace}. Must be one of: {accepted_namespaces}"
+                f"Incorrect namespace={self.namespace}. Must be one of: {ACCEPTED_NAMESPACES}"
             )
 
     def __repr__(self):
@@ -109,8 +166,8 @@ class CategoryGraph:
         self.children_to_parents: dict = graph_json["children_to_parents"]
         self.parents_to_children: dict = graph_json["parents_to_children"]
 
-        hidden_id = str(self.title_to_id["category"]["Hidden_categories"])
-        self.hidden_categories = frozenset(self.parents_to_children[hidden_id])
+        hidden_id = str(self.title_to_id[CATEGORY]["Hidden_categories"])
+        self.hidden_categories = frozenset(self.parents_to_children[hidden_id].split())
 
     def __autoconvert_list_of_ids(self, ids, return_as):
         if return_as == "title":
@@ -118,7 +175,7 @@ class CategoryGraph:
         elif return_as == "id":
             return ids
         elif return_as == "page":
-            return [self.page_from_id(parent_id) for parent_id in ids]
+            return [self.get_page_from_id(parent_id) for parent_id in ids]
         else:
             raise ValueError(
                 f"return_as={return_as} is invalid. It should be one of: 'title', 'id', 'page'."
@@ -133,6 +190,7 @@ class CategoryGraph:
         skip_error_checking: bool = False,
         namespace: str = None,
     ):
+        
         if not skip_error_checking:
             total_not_none = sum(x is not None for x in [page, id, title])
             if total_not_none == 0 or total_not_none > 1:
@@ -151,12 +209,12 @@ class CategoryGraph:
                 title = standardize(title)
 
             if namespace is None:
-                if title in self.title_to_id["article"]:
+                if title in self.title_to_id[ARTICLE]:
                     namespace = "article"
-                elif title in self.title_to_id["category"]:
+                elif title in self.title_to_id[CATEGORY]:
                     namespace = "category"
 
-            page = self.page_from_title(
+            page = self.get_page_from_title(
                 title, standardize_title=False, namespace=namespace
             )
 
@@ -165,13 +223,31 @@ class CategoryGraph:
     @classmethod
     def read_json(cls, path: str):
         """
+        Loads the category graph from a JSON file.
+
         Parameters
         ----------
         path
             The path to the JSON file containing the category graph.
+
+        Notes
+        -----
+        This method uses orjson if it is available, otherwise it uses the standard json module.
+        You can install orjson with `pip install orjson`.
         """
-        with open(path) as f:
-            graph_json = json.load(f)
+        from importlib.util import find_spec
+
+        if find_spec("orjson") is not None:
+            import orjson
+
+            with open(path, "rb") as f:
+                graph_json = orjson.loads(f.read())
+
+        else:
+            import json
+
+            with open(path) as f:
+                graph_json = json.load(f)
 
         return cls(graph_json)
 
@@ -189,7 +265,72 @@ class CategoryGraph:
         """
         return [id_ for id_ in ids if id_ not in self.hidden_categories]
 
-    def page_from_id(self, id: str) -> Page:
+    def contains_id(self, id: str) -> bool:
+        """
+        Check whether the graph contains a page with the given ID.
+
+        Parameters
+        ----------
+        id
+            The ID of the page to check for.
+
+        Returns
+        -------
+        bool
+            Whether the graph contains a page with the given ID.
+        """
+        return id in self.id_to_title
+
+    def contains_page(self, page: Page) -> bool:
+        """
+        Check whether the graph contains the given page.
+
+        Parameters
+        ----------
+        page
+            The page to check for.
+
+        Returns
+        -------
+        bool
+            Whether the graph contains the given page.
+        """
+        return self.contains_id(page.id)
+
+    def contains_title(
+        self, title: str, namespace: str = None, standardize_title: bool = True
+    ) -> bool:
+        """
+        Check whether the graph contains a page with the given title.
+
+        Parameters
+        ----------
+        title
+            The title of the page to check for.
+        namespace
+            The namespace of the page to check for. If None, then the page can be in any namespace.
+        standardize_title
+            Whether to standardize the title before checking for it. If True, then the title will be
+            converted to lowercase and underscores will be replaced with spaces.
+
+        Returns
+        -------
+        bool
+            Whether the graph contains a page with the given title.
+        """
+        if standardize_title:
+            title = standardize(title)
+
+        if namespace is not None:
+            namespace_code = _namespace_to_code(namespace)
+            return title in self.title_to_id[namespace_code]
+        else:
+            for namespace_code in self.title_to_id:
+                if title in self.title_to_id[namespace_code]:
+                    return True
+            return False
+
+    def get_page_from_id(self, id: str) -> Page:
         """
         Parameters
         ----------
@@ -200,6 +341,11 @@ class CategoryGraph:
         -------
         Page
             The Page object with the given ID.
+
+        Examples
+        --------
+        >>> cg.get_page_from_id("7954681")
+        Page(id="7954681", title="Montreal", namespace="article")
         """
         id = str(id)
         if id not in self.id_to_title:
@@ -207,9 +353,11 @@ class CategoryGraph:
         if id not in self.id_to_namespace:
             raise ValueError(f"Could not determine the type of Page with ID={id}.")
 
-        return Page(id=id, title=self.id_to_title[id], namespace=self.id_to_namespace[id])
+        return Page(
+            id=id, title=self.id_to_title[id], namespace=self.id_to_namespace[id]
+        )
 
-    def page_from_title(
+    def get_page_from_title(
         self, title: str, namespace: str, standardize_title=True
     ) -> Page:
         """
@@ -227,19 +375,29 @@ class CategoryGraph:
         -------
         Page
             The page with the given title.
+
+        Examples
+        --------
+        >>> cg.get_page_from_title('Montreal', namespace='article')
+        Page(id="7954681", title="Montreal", namespace="article")
+
+        >>> cg.get_page_from_title('Montreal', namespace='category')
+        Page(id="808487", title="Montreal", namespace="category")
         """
         if standardize_title:
             title = standardize(title)
 
-        if namespace not in self.title_to_id:
+        namespace_code = _namespace_to_code(namespace)
+
+        if namespace_code not in self.title_to_id:
             raise ValueError(
-                f"namespace={namespace} is invalid. It should be one of: {list(self.title_to_id.keys())}."
+                f"namespace={namespace} is invalid. It should be one of {ACCEPTED_NAMESPACES}."
             )
 
-        if title not in self.title_to_id[namespace]:
+        if title not in self.title_to_id[namespace_code]:
             raise ValueError(f"Title {title} not found in graph.")
-        id = self.title_to_id[namespace][title]
-        return self.page_from_id(id)
+        id = self.title_to_id[namespace_code][title]
+        return self.get_page_from_id(id)
 
     def get_children(
         self,
@@ -275,18 +433,27 @@ class CategoryGraph:
 
         Returns
         -------
-        list
+        list of {str, Page}
             The parents of the page, in the format specified by return_as.
 
         Examples
         --------
-        >>> cg.get_children(title="FM Towns", return_as='id')
-        ['713136', '931397', '4092186', '6583981', '13686247', '25564613', '31959144']
+        >>> cg.get_children(id='808487', return_as='id')  # Montreal
+        ['576883', '1456209', '1970548', '2302534', '3079470', ...]
+
+        >>> cg.get_children(title="Montreal", return_as='id')
+        ['576883', '1456209', '1970548', '2302534', '3079470', ...]
+
+        >>> cg.get_children(title="Montreal", return_as='title')
+        ['List_of_postal_codes_of_Canada:_H', 'Demographics_of_Montreal', ...]
+
+        >>> cg.get_children(title="Montreal", return_as='page')
+        [Page(id="576883", title="...", namespace="article"), ...]
         """
         page_id = self._autodetect_id(
             page, id, title, standardize_title=standardize_title, namespace="category"
         )
-        parent_ids = self.parents_to_children.get(page_id, [])
+        parent_ids = self.parents_to_children.get(page_id, "").split()
 
         if not include_hidden:
             parent_ids = self.remove_hidden_ids(parent_ids)
@@ -295,13 +462,13 @@ class CategoryGraph:
 
     def get_parents(
         self,
-        page=None,
-        id=None,
-        title=None,
-        return_as="page",
-        include_hidden=False,
-        standardize_title=True,
-        namespace=None,
+        page: Page = None,
+        id: str = None,
+        title: str = None,
+        return_as: str = "page",
+        include_hidden: bool = False,
+        standardize_title: bool = True,
+        namespace: str = None,
     ):
         """
         Get the parents of a page.
@@ -357,7 +524,7 @@ class CategoryGraph:
         page_id = self._autodetect_id(
             page, id, title, standardize_title=standardize_title, namespace=namespace
         )
-        child_ids = self.children_to_parents.get(page_id, [])
+        child_ids = self.children_to_parents.get(page_id, "").split()
 
         if not include_hidden:
             child_ids = self.remove_hidden_ids(child_ids)
@@ -382,6 +549,12 @@ class CategoryGraph:
         -------
         dict of {str: int}
             A dictionary mapping page IDs to their degree counts.
+        
+        Examples
+        --------
+        >>> counts = cg.get_degree_counts()
+        >>> counts['808487']  # Montreal
+        10
         """
         # Check if cached
         if use_cache and hasattr(self, "degree_counts"):
@@ -391,8 +564,8 @@ class CategoryGraph:
         self.degree_counts = {}
 
         for id_ in self.id_to_title:
-            parents = self.children_to_parents.get(id_, [])
-            children = self.parents_to_children.get(id_, [])
+            parents = self.children_to_parents.get(id_, "").split()
+            children = self.parents_to_children.get(id_, "").split()
 
             if not include_hidden:
                 parents = self.remove_hidden_ids(parents)
@@ -435,6 +608,12 @@ class CategoryGraph:
         -------
         list of {str, Page}
             The ranked pages, in the format specified by return_as.
+        
+        Examples
+        --------
+        >>> page_ids = cg.get_parents(title="Computer", return_as='id')
+        >>> cg.rank_page_ids(page_ids)
+        ['880368', '27698964', '25645154', '4583997']
         """
 
         if mode != "degree":
@@ -469,6 +648,15 @@ class CategoryGraph:
         -------
         list of {str, Page}
             The ranked pages, in the format specified by return_as.
+        
+        Examples
+        --------
+        >>> pages = cg.get_parents(title="Computer", return_as='page')
+        >>> cg.rank_pages(pages)
+        [Page(id="880368", title="Consumer_electronics", namespace="category"),
+         Page(id="27698964", title="2000s_fads_and_trends", namespace="category"),
+         Page(id="25645154", title="1990s_fads_and_trends", namespace="category"),
+         Page(id="4583997", title="Computers", namespace="category")]
         """
         ranked_ids = self.rank_page_ids(
             [page.id for page in pages],
@@ -477,7 +665,7 @@ class CategoryGraph:
             max_pages=max_pages,
         )
 
-        return [self.page_from_id(page_id) for page_id in ranked_ids]
+        return [self.get_page_from_id(page_id) for page_id in ranked_ids]
 
     def format_page_ids(
         self, ids: List[str], sep: str = "; ", replace_underscores: bool = True
@@ -498,8 +686,14 @@ class CategoryGraph:
         -------
         str
             The formatted page IDs (in a human readable format).
+        
+        Examples
+        --------
+        >>> page_ids = cg.get_parents(title="Computer", return_as='id')
+        >>> cg.format_page_ids(page_ids)
+        'Consumer electronics; Computers; 2000s fads and trends; 1990s fads and trends'
         """
-        pages = [self.page_from_id(id_) for id_ in ids]
+        pages = [self.get_page_from_id(id_) for id_ in ids]
         return self.format_pages(
             pages, sep=sep, replace_underscores=replace_underscores
         )
@@ -524,6 +718,12 @@ class CategoryGraph:
         -------
         str
             The formatted pages (in a human readable format).
+        
+        Examples
+        --------
+        >>> pages = cg.get_parents(title="Computer", return_as='page')
+        >>> cg.format_pages(pages)
+        'Consumer electronics; Computers; 2000s fads and trends; 1990s fads and trends'
         """
         titles = [page.title for page in pages]
 
@@ -609,67 +809,3 @@ class CategoryGraph:
                 self.__autoconvert_list_of_ids(page_ids, return_as)
                 for page_ids in all_page_ids
             ]
-
-    def contains_id(self, id: str) -> bool:
-        """
-        Check whether the graph contains a page with the given ID.
-
-        Parameters
-        ----------
-        id
-            The ID of the page to check for.
-
-        Returns
-        -------
-        bool
-            Whether the graph contains a page with the given ID.
-        """
-        return id in self.id_to_title
-
-    def contains_page(self, page: Page) -> bool:
-        """
-        Check whether the graph contains the given page.
-
-        Parameters
-        ----------
-        page
-            The page to check for.
-
-        Returns
-        -------
-        bool
-            Whether the graph contains the given page.
-        """
-        return self.contains_id(page.id)
-
-    def contains_title(
-        self, title: str, namespace: str = None, standardize_title: bool = True
-    ) -> bool:
-        """
-        Check whether the graph contains a page with the given title.
-
-        Parameters
-        ----------
-        title
-            The title of the page to check for.
-        namespace
-            The namespace of the page to check for. If None, then the page can be in any namespace.
-        standardize_title
-            Whether to standardize the title before checking for it. If True, then the title will be
-            converted to lowercase and underscores will be replaced with spaces.
-
-        Returns
-        -------
-        bool
-            Whether the graph contains a page with the given title.
-        """
-        if standardize_title:
-            title = standardize(title)
-
-        if namespace is not None:
-            return title in self.title_to_id[namespace]
-        else:
-            for namespace in self.title_to_id:
-                if title in self.title_to_id[namespace]:
-                    return True
-            return False

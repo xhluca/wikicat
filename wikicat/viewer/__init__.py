@@ -7,12 +7,12 @@ import dash
 from dash import Input, Output, State
 import dash_bootstrap_components as dbc
 
-from .. import standardize
+from .. import standardize, CategoryGraph
 from . import utils
 from . import components as comp
 
 
-def build_app(cg, root, title="Wikipedia Categories Explorer", style=dbc.themes.BOOTSTRAP) -> dash.Dash:
+def build_app(cg: CategoryGraph, root, title="Wikipedia Categories Explorer", style=dbc.themes.BOOTSTRAP) -> dash.Dash:
     # Define app
     app = dash.Dash(
         __name__,
@@ -59,7 +59,7 @@ def build_app(cg, root, title="Wikipedia Categories Explorer", style=dbc.themes.
         if node_data is None:
             return "No node selected"
 
-        page = cg.page_from_id(node_data["id"])
+        page = cg.get_page_from_id(node_data["id"])
 
         articles = [c for c in cg.get_children(page) if c.is_article()]
 
@@ -169,8 +169,8 @@ def build_app(cg, root, title="Wikipedia Categories Explorer", style=dbc.themes.
             if chosen_article_name is None:
                 return dash.no_update
 
-            article = cg.page_from_title(chosen_article_name, namespace="article")
-            target = cg.page_from_id(chosen_tlc_id)
+            article = cg.get_page_from_title(chosen_article_name, namespace="article")
+            target = cg.get_page_from_id(chosen_tlc_id)
 
             backlinks = utils.bfs_with_backlinks(cg, article, target)
             chain = utils.extract_chain(backlinks, article, target)
@@ -221,7 +221,7 @@ def build_app(cg, root, title="Wikipedia Categories Explorer", style=dbc.themes.
         edges = []
 
         for id in selected_nodes:
-            page = cg.page_from_id(id)
+            page = cg.get_page_from_id(id)
             node = {
                 "data": {"id": id, "label": page.title.replace("_", " ")},
                 "classes": page.namespace,
