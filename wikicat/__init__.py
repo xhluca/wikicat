@@ -2,7 +2,8 @@ import json
 from typing import Dict, List
 import unicodedata
 
-def standardize(title: str, form: str="NFC"):
+
+def standardize(title: str, form: str = "NFC"):
     """
     Standardizes a title by replacing spaces with underscores and normalizing it to
     a given form following Unicode's normalization (defaults to NFC).
@@ -18,7 +19,9 @@ def standardize(title: str, form: str="NFC"):
 
 
 class Page:
-    def __init__(self, id: str, title: str, namespace: str, standardize_title: bool=True):
+    def __init__(
+        self, id: str, title: str, namespace: str, standardize_title: bool = True
+    ):
         """
         Parameters
         ----------
@@ -68,14 +71,14 @@ class Page:
         """
         return self.namespace == "article"
 
-    def get_url(self, use_curid: bool=False) -> str:
+    def get_url(self, use_curid: bool = False) -> str:
         """
         Parameters
         ----------
         use_curid
             Whether to use the curid in the URL. If False, it will use the title.
             The curid is more stable, but the title is more human-readable.
-        
+
         Returns
         -------
         str
@@ -127,8 +130,8 @@ class CategoryGraph:
         id: str,
         title: str,
         standardize_title: str,
-        skip_error_checking: bool=False,
-        namespace: str=None,
+        skip_error_checking: bool = False,
+        namespace: str = None,
     ):
         if not skip_error_checking:
             total_not_none = sum(x is not None for x in [page, id, title])
@@ -178,7 +181,7 @@ class CategoryGraph:
         ----------
         ids
             A list of IDs to remove hidden categories from.
-        
+
         Returns
         -------
         List[str]
@@ -192,7 +195,7 @@ class CategoryGraph:
         ----------
         id
             The ID of the page.
-        
+
         Returns
         -------
         Page
@@ -206,7 +209,9 @@ class CategoryGraph:
 
         return Page(id=id, title=self.id_to_title[id], namespace=self.id_to_type[id])
 
-    def page_from_title(self, title: str, namespace: str, standardize_title=True) -> Page:
+    def page_from_title(
+        self, title: str, namespace: str, standardize_title=True
+    ) -> Page:
         """
         Parameters
         ----------
@@ -217,7 +222,7 @@ class CategoryGraph:
         standardize_title
             Whether to standardize the title. This is recommended, but can be disabled
             for performance reasons.
-        
+
         Returns
         -------
         Page
@@ -238,12 +243,12 @@ class CategoryGraph:
 
     def get_children(
         self,
-        page: Page=None,
-        id: Page=None,
-        title: Page=None,
-        return_as: str="page",
-        include_hidden: bool=False,
-        standardize_title: bool=True,
+        page: Page = None,
+        id: Page = None,
+        title: Page = None,
+        return_as: str = "page",
+        include_hidden: bool = False,
+        standardize_title: bool = True,
     ):
         """
         Get the children of a category page.
@@ -267,7 +272,7 @@ class CategoryGraph:
         standardize_title
             Whether to standardize the title before searching for it. Only applies
             if title is given.
-        
+
         Returns
         -------
         list
@@ -325,7 +330,7 @@ class CategoryGraph:
             the namespace will be inferred from the title. If the title is not found
             in either the "article" or "category" namespaces, then an error will be
             raised.
-        
+
         Returns
         -------
         list of {str, Page}
@@ -359,7 +364,9 @@ class CategoryGraph:
 
         return self.__autoconvert_list_of_ids(child_ids, return_as)
 
-    def get_degree_counts(self, include_hidden: bool=False, use_cache: bool=True) -> Dict[str, int]:
+    def get_degree_counts(
+        self, include_hidden: bool = False, use_cache: bool = True
+    ) -> Dict[str, int]:
         """
         Get the degree counts for all pages.
 
@@ -370,7 +377,7 @@ class CategoryGraph:
         use_cache
             Whether to use the cached degree counts. If False, then the degree counts
             will be recomputed.
-        
+
         Returns
         -------
         dict of {str: int}
@@ -399,7 +406,12 @@ class CategoryGraph:
         return self.degree_counts
 
     def rank_page_ids(
-        self, ids: List[str], mode: str="degree", ascending: bool=False, max_pages: int=None, return_as: str="id"
+        self,
+        ids: List[str],
+        mode: str = "degree",
+        ascending: bool = False,
+        max_pages: int = None,
+        return_as: str = "id",
     ) -> list:
         """
         Rank a list of page IDs.
@@ -418,7 +430,7 @@ class CategoryGraph:
             returned.
         return_as
             The format to return the pages in. One of: 'title', 'id', 'page'.
-        
+
         Returns
         -------
         list of {str, Page}
@@ -467,7 +479,9 @@ class CategoryGraph:
 
         return [self.page_from_id(page_id) for page_id in ranked_ids]
 
-    def format_page_ids(self, ids: List[str], sep: str="; ", replace_underscores: bool=True) -> str:
+    def format_page_ids(
+        self, ids: List[str], sep: str = "; ", replace_underscores: bool = True
+    ) -> str:
         """
         Format a list of page IDs into a string that is human readable.
 
@@ -479,7 +493,7 @@ class CategoryGraph:
             The separator to use between page titles.
         replace_underscores
             Whether to replace underscores with spaces in the page titles.
-        
+
         Returns
         -------
         str
@@ -491,7 +505,9 @@ class CategoryGraph:
         )
 
     @staticmethod
-    def format_pages(pages: List[Page], sep: str="; ", replace_underscores: bool=True) -> str:
+    def format_pages(
+        pages: List[Page], sep: str = "; ", replace_underscores: bool = True
+    ) -> str:
         """
         Format a list of Page objects into a string that is human readable.
 
@@ -503,7 +519,7 @@ class CategoryGraph:
             The separator to use between page titles.
         replace_underscores
             Whether to replace underscores with spaces in the page titles.
-        
+
         Returns
         -------
         str
@@ -515,7 +531,15 @@ class CategoryGraph:
             titles = [title.replace("_", " ") for title in titles]
         return sep.join(titles)
 
-    def traverse(self, page: Page, direction: str, level: int = 1, flatten: bool = True, include_hidden: bool = False, return_as: str = "page") -> list:
+    def traverse(
+        self,
+        page: Page,
+        direction: str,
+        level: int = 1,
+        flatten: bool = True,
+        include_hidden: bool = False,
+        return_as: str = "page",
+    ) -> list:
         """
         Traverse the parents of a page for a given level.
 
@@ -537,7 +561,7 @@ class CategoryGraph:
             Whether to include hidden categories in the results.
         return_as: str, default "page"
             The format to return the parents/children in. One of: 'title', 'id', 'page'.
-        
+
         Returns
         -------
         list of {str, Page}
@@ -549,9 +573,13 @@ class CategoryGraph:
         elif direction == "children":
             get_neighbors = self.get_children
         else:
-            raise ValueError(f"direction={direction} is invalid. Must be one of: 'parents', 'children'.")
-        
-        lvl_page_ids = get_neighbors(page=page, include_hidden=include_hidden, return_as='id')
+            raise ValueError(
+                f"direction={direction} is invalid. Must be one of: 'parents', 'children'."
+            )
+
+        lvl_page_ids = get_neighbors(
+            page=page, include_hidden=include_hidden, return_as="id"
+        )
         visited_ids = set()
         all_page_ids = []
 
@@ -566,8 +594,10 @@ class CategoryGraph:
                         all_page_ids.append(page_id)
                     else:
                         all_page_ids[-1].append(page_id)
-                    
-                    neighbor_ids = get_neighbors(id=page_id, include_hidden=include_hidden, return_as='id')
+
+                    neighbor_ids = get_neighbors(
+                        id=page_id, include_hidden=include_hidden, return_as="id"
+                    )
                     next_lvl_page_ids.extend(neighbor_ids)
                     visited_ids.add(page_id)
             lvl_page_ids = next_lvl_page_ids
@@ -575,8 +605,10 @@ class CategoryGraph:
         if flatten:
             return self.__autoconvert_list_of_ids(all_page_ids, return_as)
         else:
-            return [self.__autoconvert_list_of_ids(page_ids, return_as) for page_ids in all_page_ids]
-
+            return [
+                self.__autoconvert_list_of_ids(page_ids, return_as)
+                for page_ids in all_page_ids
+            ]
 
     def contains_id(self, id: str) -> bool:
         """
@@ -602,7 +634,7 @@ class CategoryGraph:
         ----------
         page
             The page to check for.
-        
+
         Returns
         -------
         bool
@@ -610,7 +642,9 @@ class CategoryGraph:
         """
         return self.contains_id(page.id)
 
-    def contains_title(self, title: str, namespace: str=None, standardize_title: bool=True) -> bool:
+    def contains_title(
+        self, title: str, namespace: str = None, standardize_title: bool = True
+    ) -> bool:
         """
         Check whether the graph contains a page with the given title.
 
@@ -623,7 +657,7 @@ class CategoryGraph:
         standardize_title
             Whether to standardize the title before checking for it. If True, then the title will be
             converted to lowercase and underscores will be replaced with spaces.
-        
+
         Returns
         -------
         bool
