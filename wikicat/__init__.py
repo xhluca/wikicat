@@ -104,7 +104,7 @@ class CategoryGraph:
             The JSON object containing the category graph.
         """
         self.id_to_title: dict = graph_json["id_to_title"]
-        self.id_to_type: dict = graph_json["id_to_type"]
+        self.id_to_namespace: dict = graph_json["id_to_type"]
         self.title_to_id: dict = graph_json["title_to_id"]
         self.children_to_parents: dict = graph_json["children_to_parents"]
         self.parents_to_children: dict = graph_json["parents_to_children"]
@@ -204,10 +204,10 @@ class CategoryGraph:
         id = str(id)
         if id not in self.id_to_title:
             raise ValueError(f"Page with ID={id} was not found in the graph.")
-        if id not in self.id_to_type:
+        if id not in self.id_to_namespace:
             raise ValueError(f"Could not determine the type of Page with ID={id}.")
 
-        return Page(id=id, title=self.id_to_title[id], namespace=self.id_to_type[id])
+        return Page(id=id, title=self.id_to_title[id], namespace=self.id_to_namespace[id])
 
     def page_from_title(
         self, title: str, namespace: str, standardize_title=True
