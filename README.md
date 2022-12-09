@@ -21,7 +21,7 @@ pip3 install wikicat
 import wikicat as wc
 
 # Load the graph
-cg = wc.CategoryGraph.read_json('~/.wikicat_data/category_graph_<yyyymmdd>.json')
+cg = wc.CategoryGraph.read_json('/path/to/category_graph_<yyyymmdd>.json')
 
 # Get the page for "Montreal"
 page = cg.get_page_from_title('Montreal', namespace='article')
@@ -34,10 +34,14 @@ print(f"Category tags of {page.title}: {cats}")
 print("URL:", page.get_url())
 ```
 
+By default, the path will be `~/.wikicat_data/`, but the JSON can be stored anywhere you want (see `wikicat.processing` below for more information).
+
 You can find the full documentation in the [our repository wiki](https://github.com/xhluca/wikicat/wiki).
 
 
-## `wikicat.processing`: CLI for processing the Wikipedia category graph
+## `wikicat.processing`
+
+*`wikicat.processing` is a command line interface (CLI) for downloading and processing the data*
 
 To install the processing tools, run:
 
@@ -51,7 +55,7 @@ To download a dump directly from web archive:
 python3 -m wikicat.processing.download_dump --dump_name dump_<yyyymmdd>.db --year <yyyy> --month <mm> --day <dd>
 ```
 
-Once you have downloaded a dump, you can generate the graph with:
+If you do not specify `--save_dir`, it will automatically be saved to `~/.wikicat_data`. Once you have downloaded a database dump, you can generate the graph with:
 
 ```bash
 python3 -m wikicat.processing.generate_graph --dump_name dump_<yyyymmdd>.db --save_name category_graph_<yyyymmdd>.json
@@ -60,7 +64,9 @@ python3 -m wikicat.processing.generate_graph --dump_name dump_<yyyymmdd>.db --sa
 The results will be saved in `~/.wikicat_data/category_graph_<yyyymmdd>.json`.
 
 
-## `wikicat.viewer`: an application to visually explore the category graph
+## `wikicat.viewer`
+
+*`wikicaat.viewer` is an application that lets you visually explore a category graph*
 
 To install the viewer, run:
 
@@ -75,6 +81,14 @@ python3 -m wikicat.viewer --load_name category_graph_<yyyymmdd>.json --port 8050
 ```
 
 Then, open your browser to `http://0.0.0.0:8050`.
+
+### Usage
+
+The viewer let you interact with the nodes. You can zoom in and out, move and click the nodes in the graph.
+- When you click on a node, you will see various information (including a list of children articles) appear on the middle panel. 
+- On the right panel, you will see various checklists of children and parents of the selected node. When you click on "Update", the checked parents and children will be added to the graph.
+- There's a dropdown and a validated input. For the input, a green check will appear if a valid article title is input, otherwise it remains red. The dropdown lets you choose one of [28 top-level categories](https://en.wikipedia.org/wiki/Wikipedia:Contents/Categories). The input let you type the name of an article (not category). When the title is valid, you can click on the "Compute Path" button, which will *try* to find a valid path between the top-level category and the article you chose.
+- Click on the "Reset" button to go back to the original view.
 
 ### Accessing components
 
