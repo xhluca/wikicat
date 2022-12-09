@@ -1,13 +1,17 @@
 # `wikicat`: A Python toolkit for managing and navigating graphs of Wikipedia categories
 
-| ![](assets/interactive_network.jpg) | ![](assets/ui.jpg) |
+| ![API Sample](assets/api.png) | ![CLI Sample](assets/cli.png) |
 |:---:|:---:|
-| Interactive Network | UI for finegrained control |
+| Simple Python API for exploring graph offline | Useful CLI for processing and launching app |
+
+| ![Interactive network](assets/interactive_network.jpg) | ![panels in the user interface](assets/ui.jpg) |
+|:---:|:---:|
+| Interactive visualize Network of categories | UI for finegrained control of nodes being displayed |
 
 
 ## Main API
 
-The main `wikicat` API allows you work with category graphs generated from a certain dump by Wikipedia. Once the dump is processed via `wikicat.processing`, you can easily navigate the graph using simple and clear Python code, all offline (i.e., you do not need to make web requests to Wikipedia). The API is designed to be as simple as possible, and is intended to be used by researchers and developers who want to work with the Wikipedia category graph.
+The main `wikicat` API allows you work with category graphs generated from a certain dump by Wikipedia. Once the dump is processed via `wikicat.processing`, you can easily navigate the graph using simple and clear Python code, all offline (i.e., you do not need to make web requests to Wikipedia, and you can choose dump going back to any date you prefer). The API is designed to be as simple as possible, and is intended to be used by researchers and developers who want to work with the Wikipedia category graph.
 
 To install the API, run:
 
@@ -52,13 +56,22 @@ pip3 install wikicat[processing]
 To download a dump directly from web archive:
 
 ```bash
-python3 -m wikicat.processing.download_dump --dump_name dump_<yyyymmdd>.db --year <yyyy> --month <mm> --day <dd>
+# Download DB dump of Wikipedia categories
+python3 -m wikicat.processing.download_dump \
+        --year <yyyy> \
+        --month <mm> \
+        --day <dd>
 ```
 
 If you do not specify `--save_dir`, it will automatically be saved to `~/.wikicat_data`. Once you have downloaded a database dump, you can generate the graph with:
 
 ```bash
-python3 -m wikicat.processing.generate_graph --dump_name dump_<yyyymmdd>.db --save_name category_graph_<yyyymmdd>.json
+# Process DB dump into readable category graph
+python3 -m wikicat.processing.generate_graph \
+        --year <yyyy> \
+        --month <mm> \
+        --day <dd> \
+        --save_prefix category_graph
 ```
 
 The results will be saved in `~/.wikicat_data/category_graph_<yyyymmdd>.json`.
@@ -76,8 +89,10 @@ pip3 install wikicat[viewer]
 
 To run the viewer, run:
 
-```
-python3 -m wikicat.viewer --load_name category_graph_<yyyymmdd>.json --port 8050
+```bash
+python3 -m wikicat.viewer \
+        --load_name category_graph_<yyyy>_<mm>_<dd>.json \
+        --port 8050
 ```
 
 Then, open your browser to `http://0.0.0.0:8050`.
