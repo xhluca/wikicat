@@ -4,7 +4,7 @@
 |:---:|:---:|
 | Simple Python API for exploring graph offline | Useful CLI for processing and launching app |
 | ![Interactive network](assets/interactive_network.jpg) | ![panels in the user interface](assets/ui.jpg) |
-| Interactive visualize Network of categories | UI for finegrained control of nodes being displayed |
+| Interactive visualization of categories | UI to display information and control what gets displayed |
 
 
 ## Main API
