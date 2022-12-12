@@ -4,7 +4,7 @@
 |:---:|:---:|
 | Simple Python API for exploring graph offline | Useful CLI for processing and launching app |
 | ![Interactive network](assets/interactive_network.jpg) | ![panels in the user interface](assets/ui.jpg) |
-| Interactive visualization of categories | UI to display information and control what gets displayed |
+| Interactive visualization of categories | UI to display information and filter nodes |
 
 
 ## Main API
@@ -23,7 +23,7 @@ pip3 install wikicat
 import wikicat as wc
 
 # Load the graph
-cg = wc.CategoryGraph.read_json('/path/to/category_graph_<yyyymmdd>.json')
+cg = wc.CategoryGraph.read_json('/path/to/category_graph_<yyyy>_<mm>_<dd>.json')
 
 # Get the page for "Montreal"
 page = cg.get_page_from_title('Montreal', namespace='article')
@@ -72,7 +72,7 @@ python3 -m wikicat.processing.generate_graph \
         --save_prefix category_graph
 ```
 
-The results will be saved in `~/.wikicat_data/category_graph_<yyyymmdd>.json`.
+The results will be saved in `~/.wikicat_data/category_graph_<yyyy>_<mm>_<dd>.json`.
 
 
 ## `wikicat.viewer`

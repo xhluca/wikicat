@@ -752,7 +752,9 @@ class CategoryGraph:
             The direction to traverse. One of: 'parents', 'children'.
         level: int
             The number of levels to traverse. If 1, then only the parents/children of the page
-            will be returned. If 2, then the parents/children of the parents/children of the page will
+            will be returned. 
+            
+            If 2, then the parents/children of the parents/children of the page will
             be returned, and so on.
         flatten: bool
             Whether to flatten the results into a single list. If False, then the
