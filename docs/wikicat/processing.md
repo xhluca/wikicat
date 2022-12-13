@@ -1,4 +1,4 @@
-# Module `wikicat.processing`
+# Reference for module `wikicat.processing`
 
 ## `wikicat.processing.generate_graph`
 
@@ -54,5 +54,5 @@ wikicat.processing.main(load_dir, save_dir, load_name, save_name)
 wikicat.processing.parse_args()
 ```
 
-# Module `wikicat.processing`
+# Reference for module `wikicat.processing`
 

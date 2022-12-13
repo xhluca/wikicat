@@ -248,7 +248,7 @@ def format_module_from_content(node_contents: dict, module_prefix: str = None):
     formatted_page = ""
 
     if module_prefix is not None:
-        formatted_page += md_header(f"Module `{module_prefix}`", level=1)
+        formatted_page += md_header(f"Reference for module `{module_prefix}`", level=1)
 
     for name, node_content in node_contents.items():
         if node_content["docstring"] is not None:

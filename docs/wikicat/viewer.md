@@ -1,4 +1,4 @@
-# Module `wikicat.viewer`
+# Reference for module `wikicat.viewer`
 
 ## `wikicat.viewer.build_parser`
 
@@ -6,7 +6,7 @@
 wikicat.viewer.build_parser()
 ```
 
-# Module `wikicat.viewer`
+# Reference for module `wikicat.viewer`
 
 ## `wikicat.viewer.bfs_with_backlinks`
 
@@ -36,7 +36,7 @@ wikicat.viewer.insert_artificial_root_node(cg, root_id)
 
 Workaround to get the graph to have a "root" node that links to all top-level categories.
 
-# Module `wikicat.viewer`
+# Reference for module `wikicat.viewer`
 
 ## `wikicat.viewer.inline_div`
 
@@ -116,7 +116,7 @@ wikicat.viewer.build_layout(cyto_graph, panel, cards_column, sto)
 wikicat.viewer.build_card_column(cards)
 ```
 
-# Module `wikicat.viewer`
+# Reference for module `wikicat.viewer`
 
 ## `wikicat.viewer.assign_callbacks`
 

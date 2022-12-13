@@ -1,4 +1,4 @@
-# Module `wikicat`
+# Reference for module `wikicat`
 
 ## `wikicat.standardize`
 
