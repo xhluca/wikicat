@@ -226,14 +226,14 @@ def format_docstring_to_markdown(
         node_name = node_content["name"]
 
     if module_prefix is not None and module_prefix != "":
-        node_name = module_prefix + "." + node_name
+        full_node_name = module_prefix + "." + node_name
 
     doc_str_dict = node_content["docstring"]
     args = node_content["args"]
     signature_lst = signature_list_from_args(args)
 
     markdown = md_header(f"`{node_name}`", level=level)
-    markdown += f"```python\n{node_name}({', '.join(signature_lst)})\n```\n\n"
+    markdown += f"```python\n{full_node_name}({', '.join(signature_lst)})\n```\n\n"
 
     if doc_str_dict is None:
         return markdown
@@ -274,10 +274,7 @@ def format_module_from_content(node_contents: dict, module_prefix: str = None):
     formatted_page = ""
 
     if module_prefix is not None:
-        formatted_page += md_header(f"Reference for module `{module_prefix}`", level=1)
-    
-    if len(node_contents) == 0:
-        formatted_page += "No docstring found in module.\n\n"
+        formatted_page += md_header(f"Reference for `{module_prefix}`", level=1)
 
     for name, node_content in node_contents.items():
         if node_content["docstring"] is not None:

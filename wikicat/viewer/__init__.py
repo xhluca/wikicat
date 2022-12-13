@@ -238,15 +238,19 @@ def assign_callbacks(
 def build_app(
     cg: CategoryGraph,
     title="Wikipedia Categories Explorer",
-    style=dbc.themes.BOOTSTRAP,
+    style=None,
     **kwargs,
 ) -> dash.Dash:
     """
     Builds the Dash app. The app is a Dash app with a Cytoscape graph, a panel with
     buttons, inputs, dropdowns, checklists and markdowns, and a store for the selected
     nodes. The app is built using the components defined in the components module.
-    It can be started by using the `wikicat.viewer.run()` function.
+    It can be started by using the `wikicat.viewer.run()` function. By default, 
+    it will use the bootstrap style.
     """
+    if style is None:
+        style = dbc.themes.BOOTSTRAP
+    
     ROOT_ID = "((ROOT))"
     cg = utils.insert_artificial_root_node(cg, ROOT_ID)
     root = cg.get_page_from_id(ROOT_ID)

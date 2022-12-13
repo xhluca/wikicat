@@ -501,7 +501,7 @@ class CategoryGraph:
 
         Returns
         -------
-        list of {str, Page}
+        list of str or Page
             The parents of the page, in the format specified by return_as.
 
         Examples
@@ -568,7 +568,7 @@ class CategoryGraph:
 
         Returns
         -------
-        list of {str, Page}
+        list of str or Page
             The parents of the page, in the format specified by return_as.
 
         Examples
@@ -674,7 +674,7 @@ class CategoryGraph:
 
         Returns
         -------
-        list of {str, Page}
+        list of str or Page
             The ranked pages, in the format specified by return_as.
         
         Examples
@@ -716,7 +716,7 @@ class CategoryGraph:
 
         Returns
         -------
-        list of {str, Page}
+        list of str or Page
             The ranked pages, in the format specified by return_as.
         
         Examples
@@ -834,7 +834,7 @@ class CategoryGraph:
 
         Returns
         -------
-        list of {str, Page}
+        list of str or Page
             A list of all traversed pages, in the format specified by return_as. If flatten=False,
             then the results will be a list of lists, where each list.
         """

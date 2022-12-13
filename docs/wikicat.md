@@ -1,6 +1,6 @@
-# Reference for module `wikicat`
+# Reference for `wikicat`
 
-## `wikicat.standardize`
+## `standardize`
 
 ```python
 wikicat.standardize(title, form="NFC")
@@ -20,7 +20,7 @@ a given form following Unicode's normalization (defaults to NFC).
 | `form` | `str` | `"NFC"` | The form to normalize the title to. Defaults to NFC. |
 
 
-## `wikicat.Page`
+## `Page`
 
 ```python
 wikicat.Page(id, title, namespace, standardize_title=True)
@@ -61,7 +61,7 @@ True
 
 
 
-### `wikicat.Page.__repr__`
+### `Page.__repr__`
 
 ```python
 wikicat.Page.__repr__(self)
@@ -89,7 +89,7 @@ The representation of the page.
 
 
 
-### `wikicat.Page.is_category`
+### `Page.is_category`
 
 ```python
 wikicat.Page.is_category(self)
@@ -107,7 +107,7 @@ bool
 
 Whether the page is a category.
 
-### `wikicat.Page.is_article`
+### `Page.is_article`
 
 ```python
 wikicat.Page.is_article(self)
@@ -125,7 +125,7 @@ bool
 
 Whether the page is an article.
 
-### `wikicat.Page.get_url`
+### `Page.get_url`
 
 ```python
 wikicat.Page.get_url(self, use_curid=False)
@@ -150,7 +150,7 @@ str
 
 The URL of the page.
 
-## `wikicat.CategoryGraph`
+## `CategoryGraph`
 
 ```python
 wikicat.CategoryGraph(graph_json)
@@ -201,7 +201,7 @@ the `read_json` class method to read the graph from a JSON file.
 
 
 
-### `wikicat.CategoryGraph.read_json`
+### `CategoryGraph.read_json`
 
 ```python
 wikicat.CategoryGraph.read_json(cls, path)
@@ -234,7 +234,7 @@ Loads the category graph from a JSON file.
 This method uses orjson if it is available, otherwise it uses the standard json module.
 You can install orjson with `pip install orjson`.
 
-### `wikicat.CategoryGraph.remove_hidden_ids`
+### `CategoryGraph.remove_hidden_ids`
 
 ```python
 wikicat.CategoryGraph.remove_hidden_ids(self, ids)
@@ -259,7 +259,7 @@ list of str
 
 The list of IDs with hidden categories removed.
 
-### `wikicat.CategoryGraph.contains_id`
+### `CategoryGraph.contains_id`
 
 ```python
 wikicat.CategoryGraph.contains_id(self, id)
@@ -285,7 +285,7 @@ bool
 
 Whether the graph contains a page with the given ID.
 
-### `wikicat.CategoryGraph.contains_page`
+### `CategoryGraph.contains_page`
 
 ```python
 wikicat.CategoryGraph.contains_page(self, page)
@@ -311,7 +311,7 @@ bool
 
 Whether the graph contains the given page.
 
-### `wikicat.CategoryGraph.contains_title`
+### `CategoryGraph.contains_title`
 
 ```python
 wikicat.CategoryGraph.contains_title(self, title, namespace=None, standardize_title=True)
@@ -339,7 +339,7 @@ bool
 
 Whether the graph contains a page with the given title.
 
-### `wikicat.CategoryGraph.get_page_from_id`
+### `CategoryGraph.get_page_from_id`
 
 ```python
 wikicat.CategoryGraph.get_page_from_id(self, id)
@@ -373,7 +373,7 @@ Page(id="7954681", title="Montreal", namespace="article")
 
 
 
-### `wikicat.CategoryGraph.get_page_from_title`
+### `CategoryGraph.get_page_from_title`
 
 ```python
 wikicat.CategoryGraph.get_page_from_title(self, title, namespace, standardize_title=True)
@@ -412,7 +412,7 @@ Page(id="808487", title="Montreal", namespace="category")
 
 
 
-### `wikicat.CategoryGraph.get_children`
+### `CategoryGraph.get_children`
 
 ```python
 wikicat.CategoryGraph.get_children(self, page=None, id=None, title=None, return_as="page", include_hidden=False, standardize_title=True)
@@ -438,7 +438,7 @@ Get the children of a category page.
 #### Returns
 
 ```
-list of {str, Page}
+list of str or Page
 ```
 
 The parents of the page, in the format specified by return_as.
@@ -461,7 +461,7 @@ The parents of the page, in the format specified by return_as.
 
 
 
-### `wikicat.CategoryGraph.get_parents`
+### `CategoryGraph.get_parents`
 
 ```python
 wikicat.CategoryGraph.get_parents(self, page=None, id=None, title=None, return_as="page", include_hidden=False, standardize_title=True, namespace=None)
@@ -488,7 +488,7 @@ Get the parents of a page.
 #### Returns
 
 ```
-list of {str, Page}
+list of str or Page
 ```
 
 The parents of the page, in the format specified by return_as.
@@ -514,7 +514,7 @@ Page(id="25645154", title="1990s_fads_and_trends", namespace="category")]
 
 
 
-### `wikicat.CategoryGraph.get_degree_counts`
+### `CategoryGraph.get_degree_counts`
 
 ```python
 wikicat.CategoryGraph.get_degree_counts(self, include_hidden=False, use_cache=True)
@@ -551,7 +551,7 @@ A dictionary mapping page IDs to their degree counts.
 
 
 
-### `wikicat.CategoryGraph.rank_page_ids`
+### `CategoryGraph.rank_page_ids`
 
 ```python
 wikicat.CategoryGraph.rank_page_ids(self, ids, mode="degree", ascending=False, max_pages=None, return_as="id")
@@ -576,7 +576,7 @@ Rank a list of page IDs.
 #### Returns
 
 ```
-list of {str, Page}
+list of str or Page
 ```
 
 The ranked pages, in the format specified by return_as.
@@ -591,7 +591,7 @@ The ranked pages, in the format specified by return_as.
 
 
 
-### `wikicat.CategoryGraph.rank_pages`
+### `CategoryGraph.rank_pages`
 
 ```python
 wikicat.CategoryGraph.rank_pages(self, pages, mode="degree", ascending=False, max_pages=None)
@@ -615,7 +615,7 @@ Rank a list of Page objects.
 #### Returns
 
 ```
-list of {str, Page}
+list of str or Page
 ```
 
 The ranked pages, in the format specified by return_as.
@@ -633,7 +633,7 @@ The ranked pages, in the format specified by return_as.
 
 
 
-### `wikicat.CategoryGraph.format_page_ids`
+### `CategoryGraph.format_page_ids`
 
 ```python
 wikicat.CategoryGraph.format_page_ids(self, ids, sep="; ", replace_underscores=True)
@@ -671,7 +671,7 @@ The formatted page IDs (in a human readable format).
 
 
 
-### `wikicat.CategoryGraph.format_pages`
+### `CategoryGraph.format_pages`
 
 ```python
 wikicat.CategoryGraph.format_pages(pages, sep="; ", replace_underscores=True)
@@ -709,7 +709,7 @@ The formatted pages (in a human readable format).
 
 
 
-### `wikicat.CategoryGraph.traverse`
+### `CategoryGraph.traverse`
 
 ```python
 wikicat.CategoryGraph.traverse(self, page, direction, level=1, flatten=True, include_hidden=False, return_as="page")
@@ -735,13 +735,13 @@ Traverse the parents of a page for a given level.
 #### Returns
 
 ```
-list of {str, Page}
+list of str or Page
 ```
 
 A list of all traversed pages, in the format specified by return_as. If flatten=False,
 then the results will be a list of lists, where each list.
 
-### `wikicat.CategoryGraph.get_top_level_categories`
+### `CategoryGraph.get_top_level_categories`
 
 ```python
 wikicat.CategoryGraph.get_top_level_categories(self, return_as="page")

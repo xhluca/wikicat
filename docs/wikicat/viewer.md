@@ -1,6 +1,6 @@
-# Reference for module `wikicat.viewer`
+# Reference for `wikicat.viewer`
 
-## `wikicat.viewer.assign_callbacks`
+## `assign_callbacks`
 
 ```python
 wikicat.viewer.assign_callbacks(app, cg, cyto_graph, inp, btn, cl, sw, md, sto, dd, root)
@@ -14,10 +14,10 @@ It is separated from `create_app` to ensure modularity. It takes in all the comp
 `id` attributes. It also takes in the `cg` argument to access the `CategoryGraph` object
 and the `root` argument to access the root node id.
 
-## `wikicat.viewer.build_app`
+## `build_app`
 
 ```python
-wikicat.viewer.build_app(cg, title="Wikipedia Categories Explorer", style)
+wikicat.viewer.build_app(cg, title="Wikipedia Categories Explorer", style=None)
 ```
 
 #### Description
@@ -25,9 +25,10 @@ wikicat.viewer.build_app(cg, title="Wikipedia Categories Explorer", style)
 Builds the Dash app. The app is a Dash app with a Cytoscape graph, a panel with
 buttons, inputs, dropdowns, checklists and markdowns, and a store for the selected
 nodes. The app is built using the components defined in the components module.
-It can be started by using the `wikicat.viewer.run()` function.
+It can be started by using the `wikicat.viewer.run()` function. By default, 
+it will use the bootstrap style.
 
-## `wikicat.viewer.run`
+## `run`
 
 ```python
 wikicat.viewer.run(load_dir, load_name, port=8050, host="0.0.0.0", debug=True, app=None)
@@ -38,9 +39,9 @@ wikicat.viewer.run(load_dir, load_name, port=8050, host="0.0.0.0", debug=True, a
 Runs the app. If `app` is None, a new app is built. Otherwise, the given app is
 used. The app is built using the `wikicat.viewer.build_app()` function.
 
-# Reference for module `wikicat.viewer.__main__`
+# Reference for `wikicat.viewer.__main__`
 
-## `wikicat.viewer.__main__.build_parser`
+## `build_parser`
 
 ```python
 wikicat.viewer.__main__.build_parser()
@@ -65,9 +66,9 @@ argparse.ArgumentParser
 
 The argument parser for the `wikicat.viewer` module.
 
-# Reference for module `wikicat.viewer.components`
+# Reference for `wikicat.viewer.components`
 
-## `wikicat.viewer.components.inline_div`
+## `inline_div`
 
 ```python
 wikicat.viewer.components.inline_div(children)
@@ -77,7 +78,7 @@ wikicat.viewer.components.inline_div(children)
 
 Create a div with inline-block display style.
 
-## `wikicat.viewer.components.generate_cytoscape_stylesheet`
+## `generate_cytoscape_stylesheet`
 
 ```python
 wikicat.viewer.components.generate_cytoscape_stylesheet(root_color="red", article_color="#9097C0", category_color="#503B31", selected_node_border_color="blue", edge_color="#705d56")
@@ -94,7 +95,7 @@ The parameters are the colors to be used for the different elements. If you want
 have more control over the style, you can use the
 [Cytoscape documentation](https://dash.plotly.com/cytoscape/styling) to create your own.
 
-## `wikicat.viewer.components.build_cytoscape_graph`
+## `build_cytoscape_graph`
 
 ```python
 wikicat.viewer.components.build_cytoscape_graph(root, id="cytoscape-graph", stylesheet=None)
@@ -104,7 +105,7 @@ wikicat.viewer.components.build_cytoscape_graph(root, id="cytoscape-graph", styl
 
 Build a Cytoscape graph from a root node. If no stylesheet is provided, a default one is generated.
 
-## `wikicat.viewer.components.build_dropdowns`
+## `build_dropdowns`
 
 ```python
 wikicat.viewer.components.build_dropdowns(cg, id="dd-choose-tlc")
@@ -114,7 +115,7 @@ wikicat.viewer.components.build_dropdowns(cg, id="dd-choose-tlc")
 
 Build a dropdown to choose a top-level category.
 
-## `wikicat.viewer.components.build_panel`
+## `build_panel`
 
 ```python
 wikicat.viewer.components.build_panel(btn, inp, md, dd)
@@ -135,7 +136,7 @@ Build the panel with the controls.
 | `dd` | `Dropdowns` |  | Dropdowns to choose a top-level category. |
 
 
-## `wikicat.viewer.components.build_stores`
+## `build_stores`
 
 ```python
 wikicat.viewer.components.build_stores(root_id, id="store-selected-nodes")
@@ -145,7 +146,7 @@ wikicat.viewer.components.build_stores(root_id, id="store-selected-nodes")
 
 Build a Dash `dcc.Store` to keep track of the selected nodes.
 
-## `wikicat.viewer.components.build_checklists`
+## `build_checklists`
 
 ```python
 wikicat.viewer.components.build_checklists(id_children_to_display="cl-children-to-display", id_parents_to_display="cl-parents-to-display")
@@ -155,7 +156,7 @@ wikicat.viewer.components.build_checklists(id_children_to_display="cl-children-t
 
 Build checklists to display the children and parents of a node.
 
-## `wikicat.viewer.components.build_buttons`
+## `build_buttons`
 
 ```python
 wikicat.viewer.components.build_buttons(id_update_graph="btn-update-graph", id_reset_graph="btn-reset-graph", id_show_path="btn-show-path")
@@ -165,7 +166,7 @@ wikicat.viewer.components.build_buttons(id_update_graph="btn-update-graph", id_r
 
 Build buttons to update the graph, show the path, and reset the graph.
 
-## `wikicat.viewer.components.build_cards`
+## `build_cards`
 
 ```python
 wikicat.viewer.components.build_cards(cl, sw)
@@ -175,7 +176,7 @@ wikicat.viewer.components.build_cards(cl, sw)
 
 Build cards to display the children and parents of a node.
 
-## `wikicat.viewer.components.build_switches`
+## `build_switches`
 
 ```python
 wikicat.viewer.components.build_switches(id_parents="switch-parents", id_children="switch-children")
@@ -185,7 +186,7 @@ wikicat.viewer.components.build_switches(id_parents="switch-parents", id_childre
 
 Build switches that can select all/none of the children and parents of a node to be displayed.
 
-## `wikicat.viewer.components.build_markdowns`
+## `build_markdowns`
 
 ```python
 wikicat.viewer.components.build_markdowns()
@@ -195,7 +196,7 @@ wikicat.viewer.components.build_markdowns()
 
 Build a dash `dcc.Markdown` component to display information about the clicked node.
 
-## `wikicat.viewer.components.build_inputs`
+## `build_inputs`
 
 ```python
 wikicat.viewer.components.build_inputs()
@@ -205,7 +206,7 @@ wikicat.viewer.components.build_inputs()
 
 Build an input to choose an article name (which will be green if the article exists)
 
-## `wikicat.viewer.components.build_layout`
+## `build_layout`
 
 ```python
 wikicat.viewer.components.build_layout(cyto_graph, panel, cards_column, sto)
@@ -233,7 +234,7 @@ Build the layout of the app. The layout is a `dbc.Container` with a `dbc.Row` wi
 
 
 
-## `wikicat.viewer.components.build_card_column`
+## `build_card_column`
 
 ```python
 wikicat.viewer.components.build_card_column(cards)
@@ -243,9 +244,9 @@ wikicat.viewer.components.build_card_column(cards)
 
 Build a column with the cards to display the children and parents of a node.
 
-# Reference for module `wikicat.viewer.utils`
+# Reference for `wikicat.viewer.utils`
 
-## `wikicat.viewer.utils.bfs_with_backlinks`
+## `bfs_with_backlinks`
 
 ```python
 wikicat.viewer.utils.bfs_with_backlinks(cg, article, target)
@@ -275,7 +276,7 @@ dict
 
 A dictionary of {child: parent} pairs, linking the target category to the article.
 
-## `wikicat.viewer.utils.extract_chain`
+## `extract_chain`
 
 ```python
 wikicat.viewer.utils.extract_chain(backlinks, article, target)
@@ -303,7 +304,7 @@ list
 
 A list of category ids from the article to the target category.
 
-## `wikicat.viewer.utils.was_triggered`
+## `was_triggered`
 
 ```python
 wikicat.viewer.utils.was_triggered(component, prop)
@@ -324,7 +325,7 @@ callback has multiple inputs and you want to know which one triggered the callba
 | `prop` | `str` |  | The prop to check. For example, "value" or "n_clicks". |
 
 
-## `wikicat.viewer.utils.insert_artificial_root_node`
+## `insert_artificial_root_node`
 
 ```python
 wikicat.viewer.utils.insert_artificial_root_node(cg, root_id)
