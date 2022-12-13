@@ -82,6 +82,9 @@ class Page:
         self, id: str, title: str, namespace: str, standardize_title: bool = True
     ):
         """
+        Represents a Wikipedia page. It should be used alongside CategoryGraph to
+        represent a page in the graph. You can also use it to find the URL of a page.
+        
         Parameters
         ----------
         id

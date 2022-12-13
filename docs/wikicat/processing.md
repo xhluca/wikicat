@@ -10,12 +10,30 @@ wikicat.processing.generate_graph(df)
 
 Generate the graph JSON file from the raw CSV file.
 
+The input CSV should have the following columns:
+- page_id: the curid used by Wikipedia
+- page_title: the standardized title used by Wikipedia
+- cl_to: the standardized title of the parent category
+- cl_type: the type of the parent category, either "category" or "article"
+
+The output JSON file has the following structure:
+    {
+        "id_to_title": { <id>: <title>, ... },
+        "id_to_namespace": { <id>: <type>, ... },
+        "title_to_id": {
+            "category": { <title>: <id>, ... },
+            "article": { <title>: <id>, ... },
+        },
+        "children_to_parents": { <id>: [<id>, ...], ... },
+        "parents_to_children": { <id>: [<id>, ...], ... },
+    }
+
 
 #### Parameters
 
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
-| `df` | `pandas.DataFrame` |  | The raw CSV file. It has the following columns: - page_id: the curid used by Wikipedia - page_title: the standardized title used by Wikipedia - cl_to: the standardized title of the parent category - cl_type: the type of the parent category, either "category" or "article" |
+| `df` | `pandas.DataFrame` |  | The raw CSV file. It has the following columns: |
 
 
 #### Returns
@@ -24,17 +42,7 @@ Generate the graph JSON file from the raw CSV file.
 dict
 ```
 
-The graph JSON file. It has the following structure:
-{
-    "id_to_title": { <id>: <title>, ... },
-    "id_to_namespace": { <id>: <type>, ... },
-    "title_to_id": {
-        "category": { <title>: <id>, ... },
-        "article": { <title>: <id>, ... },
-    },
-    "children_to_parents": { <id>: [<id>, ...], ... },
-    "parents_to_children": { <id>: [<id>, ...], ... },
-}
+The graph JSON file. 
 
 #### Notes
 
@@ -55,4 +63,6 @@ wikicat.processing.parse_args()
 ```
 
 # Reference for module `wikicat.processing`
+
+No docstring found in module.
 

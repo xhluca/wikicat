@@ -28,6 +28,8 @@ wikicat.Page(id, title, namespace, standardize_title=True)
 
 #### Description
 
+Represents a Wikipedia page. It should be used alongside CategoryGraph to
+represent a page in the graph. You can also use it to find the URL of a page.
 
 
 #### Parameters

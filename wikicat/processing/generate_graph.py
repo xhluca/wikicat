@@ -22,19 +22,13 @@ def generate_graph(df) -> dict:
     """
     Generate the graph JSON file from the raw CSV file.
 
-    Parameters
-    ----------
-    df : pandas.DataFrame
-        The raw CSV file. It has the following columns:
-        - page_id: the curid used by Wikipedia
-        - page_title: the standardized title used by Wikipedia
-        - cl_to: the standardized title of the parent category
-        - cl_type: the type of the parent category, either "category" or "article"
+    The input CSV should have the following columns:
+    - page_id: the curid used by Wikipedia
+    - page_title: the standardized title used by Wikipedia
+    - cl_to: the standardized title of the parent category
+    - cl_type: the type of the parent category, either "category" or "article"
 
-    Returns
-    -------
-    dict
-        The graph JSON file. It has the following structure:
+    The output JSON file has the following structure:
         {
             "id_to_title": { <id>: <title>, ... },
             "id_to_namespace": { <id>: <type>, ... },
@@ -45,6 +39,16 @@ def generate_graph(df) -> dict:
             "children_to_parents": { <id>: [<id>, ...], ... },
             "parents_to_children": { <id>: [<id>, ...], ... },
         }
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        The raw CSV file. It has the following columns:
+
+    Returns
+    -------
+    dict
+        The graph JSON file. 
 
     Notes
     -----
