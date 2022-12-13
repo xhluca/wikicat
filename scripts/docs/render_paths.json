@@ -1,0 +1,11 @@
+{
+    "docs/wikicat.md": [
+        "wikicat/__init__.py"
+    ],
+    "docs/wikicat/processing.md": [
+        "wikicat/processing/*.py"
+    ],
+    "docs/wikicat/viewer.md": [
+        "wikicat/viewer/*.py"
+    ]
+}

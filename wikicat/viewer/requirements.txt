@@ -1,0 +1,4 @@
+dash>=2.7
+dash-bootstrap-components>=1.2
+dash-cytoscape>=0.2.4
+gunicorn
