@@ -30,7 +30,7 @@ It can be started by using the `wikicat.viewer.run()` function.
 ## `wikicat.viewer.run`
 
 ```python
-wikicat.viewer.run(load_dir, load_name, port=8050, host="0.0.0.0", debug=True, app)
+wikicat.viewer.run(load_dir, load_name, port=8050, host="0.0.0.0", debug=True, app=None)
 ```
 
 #### Description
@@ -97,7 +97,7 @@ have more control over the style, you can use the
 ## `wikicat.viewer.components.build_cytoscape_graph`
 
 ```python
-wikicat.viewer.components.build_cytoscape_graph(root, id="cytoscape-graph", stylesheet)
+wikicat.viewer.components.build_cytoscape_graph(root, id="cytoscape-graph", stylesheet=None)
 ```
 
 #### Description
@@ -321,7 +321,7 @@ callback has multiple inputs and you want to know which one triggered the callba
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
 | `component` |  |  | The Dash component to check. For example, `html.Button`. |
-| `prop` |  |  | The prop to check. For example, "value" or "n_clicks". |
+| `prop` | `str` |  | The prop to check. For example, "value" or "n_clicks". |
 
 
 ## `wikicat.viewer.utils.insert_artificial_root_node`

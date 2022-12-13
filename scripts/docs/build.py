@@ -1,11 +1,19 @@
 import glob
 import json
-import pkgutil
-import inspect
 import ast
 from textwrap import dedent
 
 from pathlib import Path
+
+def recursive_infer_attribute_ast(obj: ast.Attribute):
+    lst = []
+
+    while isinstance(obj, ast.Attribute):
+        lst.append(obj.attr)
+        obj = obj.value
+    
+    lst.append(obj.id)
+    return reversed(lst)
 
 
 def get_default(obj):
@@ -14,7 +22,13 @@ def get_default(obj):
     if isinstance(obj, ast.Str):
         return f'"{obj.s}"'
     if isinstance(obj, ast.NameConstant):
-        return obj.value
+        return str(obj.value)
+    elif isinstance(obj, ast.Name):
+        return obj
+    elif isinstance(obj, ast.Attribute):
+        ".".join(recursive_infer_attribute_ast(obj))
+    else:
+        raise ValueError(f"Unexpected default value: {obj}")
 
 
 def line_is_delim(i, lines, delim="-"):
@@ -36,10 +50,22 @@ def extract_content_from_ast(node: ast.FunctionDef, remove_self=False):
     """
     docstring = ast.get_docstring(node, clean=True)
 
-    arg_list = [
-        {"name": arg.arg, "type": getattr(arg.annotation, "id", None)}
-        for arg in node.args.args
-    ]
+    arg_list = []
+    for arg in node.args.args:
+        annot = arg.annotation
+        if hasattr(annot, "id"):
+            type_ = arg.annotation.id
+        elif hasattr(annot, "s"):
+            type_ = arg.annotation.s
+        elif annot is None:
+            type_ = None
+        elif isinstance(annot, ast.Attribute):
+            type_ = ".".join(recursive_infer_attribute_ast(annot))
+
+        else:
+            raise AttributeError(f"No annotations for {arg.annotation}")
+
+        arg_list.append({"name": arg.arg, "type": type_})
 
     defaults = [get_default(arg) for arg in node.args.defaults]
     defaults = [None] * (len(arg_list) - len(defaults)) + defaults
@@ -302,54 +328,39 @@ def parse_content_from_ast(tree: ast.Module) -> dict:
 
     return node_contents
 
+if __name__ == "__main__":
+    with open("scripts/docs/render_paths.json", "r") as f:
+        render_paths = json.load(f)
 
-with open("scripts/docs/render_paths.json", "r") as f:
-    render_paths = json.load(f)
+    for target, source_lst in render_paths.items():
+        target = Path(target)
+        target.parent.mkdir(parents=True, exist_ok=True)
 
-for target, source_lst in render_paths.items():
-    target = Path(target)
-    target.parent.mkdir(parents=True, exist_ok=True)
+        doc_page = ""
 
-    doc_page = ""
+        source_lst_globed = []
+        for s in source_lst:
+            source_lst_globed.extend(glob.glob(s))
+        source_lst_globed = sorted(source_lst_globed)
+        nodes = {}
+        
+        print("Target doc file:", target)
+        print("Parsing python files:", source_lst_globed)
+        print('-'*50)
 
-    source_lst_globed = []
-    for s in source_lst:
-        source_lst_globed.extend(glob.glob(s))
-    source_lst_globed = sorted(source_lst_globed)
-    
-    print("Target doc file:", target)
-    print("Parsing python files:", source_lst_globed)
-    print('-'*50)
+        for source in source_lst_globed:
+            source = Path(source)
+            with open(source, "r") as f:
+                tree = ast.parse(f.read())
 
-    for source in source_lst_globed:
-        source = Path(source)
-        with open(source, "r") as f:
-            tree = ast.parse(f.read())
+            node_contents = parse_content_from_ast(tree)
+            module_prefix = ".".join(source.parts).replace(".py", "").replace(".__init__", "")
+            doc_page_part = format_module_from_content(
+                node_contents, module_prefix=module_prefix
+            )
+            nodes[source] = node_contents
+            doc_page += doc_page_part
 
-        node_contents = parse_content_from_ast(tree)
-        module_prefix = ".".join(source.parts).replace(".py", "").replace(".__init__", "")
-        doc_page_part = format_module_from_content(
-            node_contents, module_prefix=module_prefix
-        )
-        doc_page += doc_page_part
+        with open(target, "w") as f:
+            f.write(doc_page)
 
-    with open(target, "w") as f:
-        f.write(doc_page)
-
-# with open("wikicat/__init__.py", "r") as f:
-#     tree = ast.parse(f.read())
-
-# node_contents = parse_content_from_ast(tree)
-# doc_page = format_module_from_content(node_contents)
-
-# doc_dir = Path("docs")
-# doc_dir.mkdir(exist_ok=True)
-
-# with open(doc_dir / "wikicat.md", "w") as f:
-#     f.write(doc_page)
-
-# name = "CategoryGraph.traverse"
-# node_content = node_contents[name]
-
-# node_content["docstring"] = parse_docstring(node_content["docstring"])
-# formatted = format_docstring_to_markdown(node_content, node_name=name)

@@ -313,7 +313,7 @@ class CategoryGraph:
 
         return cls(graph_json)
 
-    def remove_hidden_ids(self, ids: List[str]) -> List[str]:
+    def remove_hidden_ids(self, ids: 'list[str]') -> 'list[str]':
         """
         Parameters
         ----------
@@ -322,7 +322,7 @@ class CategoryGraph:
 
         Returns
         -------
-        List[str]
+        list of str
             The list of IDs with hidden categories removed.
         """
         return [id_ for id_ in ids if id_ not in self.hidden_categories]
@@ -642,7 +642,7 @@ class CategoryGraph:
 
     def rank_page_ids(
         self,
-        ids: List[str],
+        ids: 'list[str]',
         mode: str = "degree",
         ascending: bool = False,
         max_pages: int = None,
@@ -690,8 +690,8 @@ class CategoryGraph:
         return self.__autoconvert_list_of_ids(ranked, return_as)
 
     def rank_pages(
-        self, pages: List[Page], mode="degree", ascending=False, max_pages=None
-    ) -> List[Page]:
+        self, pages: 'list[Page]', mode: str="degree", ascending: bool=False, max_pages: int=None
+    ) -> 'list[Page]':
         """
         Rank a list of Page objects.
 
@@ -705,6 +705,8 @@ class CategoryGraph:
             Whether to rank the pages in ascending order. If False, then the pages
             will be ranked in descending order, with the most important pages first
             (i.e. the pages with the highest degree counts).
+        max_pages
+            The maximum number of ranked pages to keep.
 
         Returns
         -------
@@ -730,7 +732,7 @@ class CategoryGraph:
         return [self.get_page_from_id(page_id) for page_id in ranked_ids]
 
     def format_page_ids(
-        self, ids: List[str], sep: str = "; ", replace_underscores: bool = True
+        self, ids: 'list[str]', sep: str = "; ", replace_underscores: bool = True
     ) -> str:
         """
         Format a list of page IDs into a string that is human readable.
@@ -762,7 +764,7 @@ class CategoryGraph:
 
     @staticmethod
     def format_pages(
-        pages: List[Page], sep: str = "; ", replace_underscores: bool = True
+        pages: 'list[Page]', sep: str = "; ", replace_underscores: bool = True
     ) -> str:
         """
         This static method formats a list of `Page` objects into a string that is human readable.

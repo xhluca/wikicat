@@ -71,7 +71,7 @@ def extract_chain(backlinks: dict, article: Page, target: Page) -> list:
     return chain
 
 
-def was_triggered(component, prop):
+def was_triggered(component, prop: str):
     """
     Returns True if the component's prop was triggered by the user. This is useful for
     determining if a component's value was changed by the user or by the app when a Dash

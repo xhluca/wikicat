@@ -241,13 +241,13 @@ wikicat.CategoryGraph.remove_hidden_ids(self, ids)
 
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
-| `ids` |  |  | A list of IDs to remove hidden categories from. |
+| `ids` | `list[str]` |  | A list of IDs to remove hidden categories from. |
 
 
 #### Returns
 
 ```
-List[str]
+list of str
 ```
 
 The list of IDs with hidden categories removed.
@@ -307,7 +307,7 @@ Whether the graph contains the given page.
 ### `wikicat.CategoryGraph.contains_title`
 
 ```python
-wikicat.CategoryGraph.contains_title(self, title, namespace, standardize_title=True)
+wikicat.CategoryGraph.contains_title(self, title, namespace=None, standardize_title=True)
 ```
 
 #### Description
@@ -320,7 +320,7 @@ Check whether the graph contains a page with the given title.
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
 | `title` | `str` |  | The title of the page to check for. |
-| `namespace` | `str` |  | The namespace of the page to check for. If None, then the page can be in any namespace. |
+| `namespace` | `str` | `None` | The namespace of the page to check for. If None, then the page can be in any namespace. |
 | `standardize_title` | `bool` | `True` | Whether to standardize the title before checking for it. If True, then the title will be converted to lowercase and underscores will be replaced with spaces. |
 
 
@@ -408,7 +408,7 @@ Page(id="808487", title="Montreal", namespace="category")
 ### `wikicat.CategoryGraph.get_children`
 
 ```python
-wikicat.CategoryGraph.get_children(self, page, id, title, return_as="page", include_hidden=False, standardize_title=True)
+wikicat.CategoryGraph.get_children(self, page=None, id=None, title=None, return_as="page", include_hidden=False, standardize_title=True)
 ```
 
 #### Description
@@ -420,9 +420,9 @@ Get the children of a category page.
 
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
-| `page` | `Page` |  | The page to get the parents of. If this is given, then id and title should not be given. |
-| `id` | `Page` |  | The ID of the page to get the parents of. If this is given, then page and title should not be given. |
-| `title` | `Page` |  | The title of the page to get the parents of. If this is given, then page and id should not be given. The namespace will be set to "category" because this is the only namespace that has children. |
+| `page` | `Page` | `None` | The page to get the parents of. If this is given, then id and title should not be given. |
+| `id` | `Page` | `None` | The ID of the page to get the parents of. If this is given, then page and title should not be given. |
+| `title` | `Page` | `None` | The title of the page to get the parents of. If this is given, then page and id should not be given. The namespace will be set to "category" because this is the only namespace that has children. |
 | `return_as` | `str` | `"page"` | The format to return the parents in. One of: 'title', 'id', 'page'. |
 | `include_hidden` | `bool` | `False` | Whether to include hidden categories in the results. |
 | `standardize_title` | `bool` | `True` | Whether to standardize the title before searching for it. Only applies if title is given. |
@@ -457,7 +457,7 @@ The parents of the page, in the format specified by return_as.
 ### `wikicat.CategoryGraph.get_parents`
 
 ```python
-wikicat.CategoryGraph.get_parents(self, page, id, title, return_as="page", include_hidden=False, standardize_title=True, namespace)
+wikicat.CategoryGraph.get_parents(self, page=None, id=None, title=None, return_as="page", include_hidden=False, standardize_title=True, namespace=None)
 ```
 
 #### Description
@@ -469,12 +469,12 @@ Get the parents of a page.
 
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
-| `page` | `Page` |  | The page to get the parents of. If this is given, then id and title should not be given. |
-| `id` | `str` |  | The ID of the page to get the parents of. If this is given, then page and title should not be given. |
-| `title` | `str` |  | The title of the page to get the parents of. If this is given, then page and id should not be given. The namespace will be set to "category" because this is the only namespace that has parents. |
+| `page` | `Page` | `None` | The page to get the parents of. If this is given, then id and title should not be given. |
+| `id` | `str` | `None` | The ID of the page to get the parents of. If this is given, then page and title should not be given. |
+| `title` | `str` | `None` | The title of the page to get the parents of. If this is given, then page and id should not be given. The namespace will be set to "category" because this is the only namespace that has parents. |
 | `return_as` | `str` | `"page"` | The format to return the parents in. One of: 'title', 'id', 'page'. |
-| `include_hidden` | `bool` | `False (False)` | Whether to include hidden categories in the results. |
-| `standardize_title` | `bool` | `True (True)` | Whether to standardize the title before searching for it. Only applies if title is given. |
+| `include_hidden` | `bool` | `False` | Whether to include hidden categories in the results. |
+| `standardize_title` | `bool` | `True` | Whether to standardize the title before searching for it. Only applies if title is given. |
 | `namespace` | `str` | `None` | The namespace of the page. Only applies if title is given. If None, then the namespace will be inferred from the title. If the title is not found in either the "article" or "category" namespaces, then an error will be raised. |
 
 
@@ -547,7 +547,7 @@ A dictionary mapping page IDs to their degree counts.
 ### `wikicat.CategoryGraph.rank_page_ids`
 
 ```python
-wikicat.CategoryGraph.rank_page_ids(self, ids, mode="degree", ascending=False, max_pages, return_as="id")
+wikicat.CategoryGraph.rank_page_ids(self, ids, mode="degree", ascending=False, max_pages=None, return_as="id")
 ```
 
 #### Description
@@ -559,10 +559,10 @@ Rank a list of page IDs.
 
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
-| `ids` |  |  | The page IDs to rank. |
+| `ids` | `list[str]` |  | The page IDs to rank. |
 | `mode` | `str` | `"degree"` | The mode to rank the pages in. Only "degree" is currently supported. |
 | `ascending` | `bool` | `False` | Whether to rank the pages in ascending order. If False, then the pages will be ranked in descending order. |
-| `max_pages` | `int` |  | The maximum number of pages to return. If None, then all pages will be returned. |
+| `max_pages` | `int` | `None` | The maximum number of pages to return. If None, then all pages will be returned. |
 | `return_as` | `str` | `"id"` | The format to return the pages in. One of: 'title', 'id', 'page'. |
 
 
@@ -587,7 +587,7 @@ The ranked pages, in the format specified by return_as.
 ### `wikicat.CategoryGraph.rank_pages`
 
 ```python
-wikicat.CategoryGraph.rank_pages(self, pages, mode="degree", ascending=False, max_pages)
+wikicat.CategoryGraph.rank_pages(self, pages, mode="degree", ascending=False, max_pages=None)
 ```
 
 #### Description
@@ -599,9 +599,10 @@ Rank a list of Page objects.
 
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
-| `pages` |  |  | The pages to rank. |
-| `mode` |  | `"degree"` | The mode to rank the pages in. Only "degree" is currently supported. |
-| `ascending` |  | `False` | Whether to rank the pages in ascending order. If False, then the pages will be ranked in descending order, with the most important pages first (i.e. the pages with the highest degree counts). |
+| `pages` | `list[Page]` |  | The pages to rank. |
+| `mode` | `str` | `"degree"` | The mode to rank the pages in. Only "degree" is currently supported. |
+| `ascending` | `bool` | `False` | Whether to rank the pages in ascending order. If False, then the pages will be ranked in descending order, with the most important pages first (i.e. the pages with the highest degree counts). |
+| `max_pages` | `int` | `None` | The maximum number of ranked pages to keep. |
 
 
 #### Returns
@@ -640,7 +641,7 @@ Format a list of page IDs into a string that is human readable.
 
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
-| `ids` |  |  | The page IDs to format. |
+| `ids` | `list[str]` |  | The page IDs to format. |
 | `sep` | `str` | `"; "` | The separator to use between page titles. |
 | `replace_underscores` | `bool` | `True` | Whether to replace underscores with spaces in the page titles. |
 
@@ -678,7 +679,7 @@ This static method formats a list of `Page` objects into a string that is human 
 
 | Name | Type | Default | Description |
 | ---- | ---- | ------- | ----------- |
-| `pages` |  |  | The pages to format. |
+| `pages` | `list[Page]` |  | The pages to format. |
 | `sep` | `str` | `"; "` | The separator to use between page titles. |
 | `replace_underscores` | `bool` | `True` | Whether to replace underscores with spaces in the page titles. |
 
