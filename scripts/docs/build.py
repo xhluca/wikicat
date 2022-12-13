@@ -315,6 +315,7 @@ for target, source_lst in render_paths.items():
     source_lst_globed = []
     for s in source_lst:
         source_lst_globed.extend(glob.glob(s))
+    source_lst_globed = sorted(source_lst_globed)
     
     print("Target doc file:", target)
     print("Parsing python files:", source_lst_globed)
@@ -326,7 +327,7 @@ for target, source_lst in render_paths.items():
             tree = ast.parse(f.read())
 
         node_contents = parse_content_from_ast(tree)
-        module_prefix = ".".join(source.parts[:-1])
+        module_prefix = ".".join(source.parts).replace(".py", "").replace(".__init__", "")
         doc_page_part = format_module_from_content(
             node_contents, module_prefix=module_prefix
         )

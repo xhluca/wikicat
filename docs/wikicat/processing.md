@@ -1,9 +1,13 @@
 # Reference for module `wikicat.processing`
 
-## `wikicat.processing.generate_graph`
+No docstring found in module.
+
+# Reference for module `wikicat.processing.generate_graph`
+
+## `wikicat.processing.generate_graph.generate_graph`
 
 ```python
-wikicat.processing.generate_graph(df)
+wikicat.processing.generate_graph.generate_graph(df)
 ```
 
 #### Description
@@ -50,19 +54,15 @@ The graph JSON file.
 - <title> is a string (the standardized title used by Wikipedia)
 - <type> is an int, either 0 (article) or 14 (category)
 
-## `wikicat.processing.main`
+## `wikicat.processing.generate_graph.main`
 
 ```python
-wikicat.processing.main(load_dir, save_dir, load_name, save_name)
+wikicat.processing.generate_graph.main(load_dir, save_dir, load_name, save_name)
 ```
 
-## `wikicat.processing.parse_args`
+## `wikicat.processing.generate_graph.parse_args`
 
 ```python
-wikicat.processing.parse_args()
+wikicat.processing.generate_graph.parse_args()
 ```
-
-# Reference for module `wikicat.processing`
-
-No docstring found in module.
 
