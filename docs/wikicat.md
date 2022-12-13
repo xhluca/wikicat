@@ -189,7 +189,14 @@ the `read_json` class method to read the graph from a JSON file.
 >>> import wikicat as wc
 >>> with open("category_graph_<yyyy>_<mm>_<dd>.json", "r") as f:
 ...     graph_json = json.load(f)
->>> graph = wc.CategoryGraph(graph_json)
+>>> cg = wc.CategoryGraph(graph_json)
+>>> # Get the page for "Montreal"
+>>> page = cg.get_page_from_title('Montreal', 'article')
+>>> # Get the categories for "Montreal"
+>>> cats = cg.get_parents(page=page)
+>>> print(f"Category tags of {page.title}: {cats}")
+>>> # Get URL of "Montreal"
+>>> print("URL:", page.get_url())
 ```
 
 
