@@ -96,6 +96,21 @@ class Page:
         standardize_title
             Whether to standardize the title. If True, it will replace spaces with
             underscores and normalize the title to NFC form.
+        
+        Examples
+        --------
+        >>> import wikicat as wc
+        >>> page = wc.Page(id="7954681", title="Montreal", namespace="article")
+        >>> page
+        Page(id="7954681", title="Montreal", namespace="article")
+        >>> page.is_category()
+        False
+        >>> page.is_article()
+        True
+        >>> page.get_url()
+        'https://en.wikipedia.org/wiki/Montreal'
+        >>> page.get_url(use_curid=True)
+        'https://en.wikipedia.org/?curid=7954681'
         """
         self.id = str(id)
         self.title = title
@@ -110,6 +125,18 @@ class Page:
             )
 
     def __repr__(self):
+        """
+        Returns
+        -------
+        str
+            The representation of the page.
+        
+        Examples
+        --------
+        >>> import wikicat as wc
+        >>> page = wc.Page(id="7954681", title="Montreal", namespace="article")
+        >>> str(page)
+        """
         return (
             f'Page(id="{self.id}", title="{self.title}", namespace="{self.namespace}")'
         )
@@ -159,10 +186,35 @@ class Page:
 class CategoryGraph:
     def __init__(self, graph_json: dict):
         """
+        This class represents the category graph. It is used to find the parents and
+        children of a page (category or article) in the graph. It also contains the
+        mapping between the curid (a unique ID assigned to each page) and the title of a page.
+
+        It is also capable of:
+        - checking whether the graph contains a page or not
+        - create a `wikicat.Page` object from a title (given a namespace) or curid
+        - compute the degree of a page by its in-degree (number of parents) and out-degree (number of children)
+        - list all the categories or articles in the graph
+        - rank the categories or articles by their degree
+        - format the graph as a human-readable string
+        - traverse all the children or parents of a page for a given depth
+
+        Although you can create a CategoryGraph object manually, it is recommended to use
+        the `read_json` class method to read the graph from a JSON file.
+
         Parameters
         ----------
         graph_json
             The JSON object containing the category graph.
+        
+        Examples
+        --------
+        >>> import json
+        >>> import wikicat as wc
+        >>> with open("category_graph_<yyyy>_<mm>_<dd>.json", "r") as f:
+        ...     graph_json = json.load(f)
+        >>> graph = wc.CategoryGraph(graph_json)
+
         """
         self.id_to_title: dict = graph_json["id_to_title"]
         self.id_to_namespace: dict = graph_json["id_to_namespace"]
@@ -234,10 +286,16 @@ class CategoryGraph:
         path
             The path to the JSON file containing the category graph.
 
+        Examples
+        --------
+        >>> import wikicat as wc
+        >>> graph = wc.CategoryGraph.read_json("category_graph_<yyyy>_<mm>_<dd>.json")
+
         Notes
         -----
         This method uses orjson if it is available, otherwise it uses the standard json module.
         You can install orjson with `pip install orjson`.
+        
         """
         from importlib.util import find_spec
 
@@ -510,7 +568,7 @@ class CategoryGraph:
         Examples
         --------
         >>> cg.get_parents(title="Computer", return_as='id')
-        [880368, 4583997, 27698964, 25645154]
+        ["880368", "4583997", "27698964", "25645154"]
 
         >>> cg.get_parents(title="Computer", return_as='title')
         ['Consumer_electronics',
@@ -518,11 +576,11 @@ class CategoryGraph:
         '2000s_fads_and_trends',
         '1990s_fads_and_trends']
 
-        >>> cg.get_parents(title="Computer", return_as='page')
-        [Page(id=880368, title=Consumer_electronics, namespace=category),
-        Page(id=4583997, title=Computers, namespace=category),
-        Page(id=27698964, title=2000s_fads_and_trends, namespace=category),
-        Page(id=25645154, title=1990s_fads_and_trends, namespace=category)]
+        >>> cg.get_parents(title="Computer", return_as="page")
+        [Page(id="880368", title="Consumer_electronics", namespace="category"),
+        Page(id="4583997", title="Computers", namespace="category"),
+        Page(id="27698964", title="2000s_fads_and_trends", namespace="category"),
+        Page(id="25645154", title="1990s_fads_and_trends", namespace="category")]
         """
 
         page_id = self._autodetect_id(

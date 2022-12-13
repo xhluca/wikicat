@@ -14,6 +14,13 @@ from . import components as comp
 def assign_callbacks(
     app: dash.Dash, cg: CategoryGraph, cyto_graph, inp, btn, cl, sw, md, sto, dd, root
 ):
+    """
+    Assign callbacks to the app. This function is called by `wikicat.viewer.app.create_app`.
+    It is separated from `create_app` to ensure modularity. It takes in all the components
+    (cyto_graph, inp, btn, cl, sw, md, sto, dd, root) as arguments in order to access their
+    `id` attributes. It also takes in the `cg` argument to access the `CategoryGraph` object
+    and the `root` argument to access the root node id.
+    """
     # Define callbacks
     @app.callback(
         Output(inp.choose_article, "valid"),
@@ -234,6 +241,12 @@ def build_app(
     style=dbc.themes.BOOTSTRAP,
     **kwargs,
 ) -> dash.Dash:
+    """
+    Builds the Dash app. The app is a Dash app with a Cytoscape graph, a panel with
+    buttons, inputs, dropdowns, checklists and markdowns, and a store for the selected
+    nodes. The app is built using the components defined in the components module.
+    It can be started by using the `wikicat.viewer.run()` function.
+    """
     ROOT_ID = "((ROOT))"
     cg = utils.insert_artificial_root_node(cg, ROOT_ID)
     root = cg.get_page_from_id(ROOT_ID)
@@ -250,7 +263,7 @@ def build_app(
     inp = comp.build_inputs()
     md = comp.build_markdowns()
     sto = comp.build_stores(root.id)
-    panel = comp.build_panel(btn, inp, md, dd.choose_tlc)
+    panel = comp.build_panel(btn, inp, md, dd)
     cards = comp.build_cards(cl=cl, sw=sw)
     cards_column = comp.build_card_column(cards)
 
@@ -264,6 +277,10 @@ def build_app(
 
 
 def run(load_dir, load_name, port=8050, host="0.0.0.0", debug=True, app=None):
+    """
+    Runs the app. If `app` is None, a new app is built. Otherwise, the given app is
+    used. The app is built using the `wikicat.viewer.build_app()` function.
+    """
     # Load category graph and insert artificial root node
     load_dir = Path(load_dir).expanduser()
     cg = CategoryGraph.read_json(load_dir / load_name)

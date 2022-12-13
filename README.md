@@ -1,10 +1,12 @@
-# `wikicat`: A Python toolkit for managing and navigating graphs of Wikipedia categories
+# `wikicat`
+
+*A Python toolkit for managing and navigating graphs of Wikipedia categories 🔖*
 
 | ![API Sample](assets/api.png) | ![CLI Sample](assets/cli.png) |
 |:---:|:---:|
-| Simple Python API for exploring graph offline | Useful CLI for processing and launching app |
+| Simple [Python API](#main-api) for exploring graph offline | Useful CLI for [processing](#wikicatprocessing) and [launching app](#wikicatviewer) |
 | ![Interactive network](assets/interactive_network.jpg) | ![panels in the user interface](assets/ui.jpg) |
-| Interactive visualization of categories | UI to display information and filter nodes |
+| [Interactive visualization of categories](#wikicatviewer) | [UI to display information and filter nodes](#usage) |
 
 
 ## Main API
@@ -41,8 +43,6 @@ print("URL:", page.get_url())
 ```
 
 By default, the path will be `~/.wikicat_data/`, but the JSON can be stored anywhere you want (see `wikicat.processing` below for more information).
-
-You can find the full documentation in the [our repository wiki](https://github.com/xhluca/wikicat/wiki).
 
 
 ## `wikicat.processing`
