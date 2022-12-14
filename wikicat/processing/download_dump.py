@@ -12,7 +12,8 @@ def parse_args():
         page and categoryliniks tables. To find the list, visit:
         https://archive.org/search.php?query=creator%3A%22Wikimedia+projects+editors%22+%22Wikimedia+database+dump+of+the+English+Wikipedia%22&sort=-date
         """,
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,)
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
     parser.add_argument("--year", type=int, required=True, help="Year of the dump")
     parser.add_argument("--month", type=int, required=True, help="Month of the year")
     parser.add_argument("--day", type=int, required=True, help="Day of the month")
@@ -38,7 +39,15 @@ def parse_args():
     return parser.parse_args()
 
 
-def main(year, month, day, save_dir, base_url="https://archive.org/download/", name_prefix="enwiki-", postfix=("-page", "-categorylinks")):
+def main(
+    year,
+    month,
+    day,
+    save_dir,
+    base_url="https://archive.org/download/",
+    name_prefix="enwiki-",
+):
+    postfix = ("-page", "-categorylinks")
     save_dir = Path(save_dir).expanduser()
     save_dir.mkdir(exist_ok=True)
 
