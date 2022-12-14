@@ -6,7 +6,7 @@ from .constants import (
     CATEGORY,
     TOP_LEVEL_CATEGORIES
 )
-from . import __version__
+from .version import __version__
 
 ACCEPTED_NAMESPACES = ("article", "category")
 
