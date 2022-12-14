@@ -2,7 +2,7 @@
 
 *A Python toolkit for managing and navigating graphs of Wikipedia categories 🔖*
 
-| ![API Sample](assets/api.png) | ![CLI Sample](assets/cli.png) |
+| ![API Sample](assets/api.jpg) | ![CLI Sample](assets/cli.jpg) |
 |:---:|:---:|
 | Simple [Python API](#main-api) for exploring graph offline | Useful CLI for [processing](#wikicatprocessing) and [launching app](#wikicatviewer) |
 | ![Interactive network](assets/interactive_network.jpg) | ![panels in the user interface](assets/ui.jpg) |
