@@ -46,3 +46,7 @@ You can also use `glob` patterns to match multiple files. For example, if you wa
     ]
 }
 ```
+
+## Configuring MkDocs
+
+The documentation is rendered via `mkdocs` and the `mkdocs-material` plug in. The configurations can be found in `mkdocs.yml`. You will need to modify the `nav` argument when adding a new documentation page.

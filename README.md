@@ -1,15 +1,18 @@
-# `wikicat`: A Python toolkit for managing and navigating graphs of Wikipedia categories
+# `wikicat`
+
+*A Python toolkit for managing and navigating graphs of Wikipedia categories 🔖*
 
 | ![API Sample](assets/api.png) | ![CLI Sample](assets/cli.png) |
 |:---:|:---:|
-| Simple Python API for exploring graph offline | Useful CLI for processing and launching app |
+| Simple [Python API](#main-api) for exploring graph offline | Useful CLI for [processing](#wikicatprocessing) and [launching app](#wikicatviewer) |
 | ![Interactive network](assets/interactive_network.jpg) | ![panels in the user interface](assets/ui.jpg) |
-| Interactive visualization of categories | UI to display information and filter nodes |
+| [Interactive visualization of categories](#wikicatviewer) | [UI to display information and filter nodes](#usage) |
 
+> **Note** If you need help at any time, you can head over to [the official documentations](https://xhluca.github.io/wikicat/).
 
 ## Main API
 
-> **Note** The reference docs can be found in [`docs/wikicat.md`](docs/wikicat.md)
+> **Note** The reference can be found on the [doc page](https://xhluca.github.io/wikicat/wikicat) or in [`docs/wikicat.md`](docs/wikicat.md)
 
 The main `wikicat` API allows you work with category graphs generated from a certain dump by Wikipedia. Once the dump is processed via `wikicat.processing`, you can easily navigate the graph using simple and clear Python code, all offline (i.e., you do not need to make web requests to Wikipedia, and you can choose dump going back to any date you prefer). The API is designed to be as simple as possible, and is intended to be used by researchers and developers who want to work with the Wikipedia category graph.
 
@@ -42,14 +45,12 @@ print("URL:", page.get_url())
 
 By default, the path will be `~/.wikicat_data/`, but the JSON can be stored anywhere you want (see `wikicat.processing` below for more information).
 
-You can find the full documentation in the [our repository wiki](https://github.com/xhluca/wikicat/wiki).
-
 
 ## `wikicat.processing`
 
 *`wikicat.processing` is a command line interface (CLI) for downloading and processing the data*
 
-> **Note** The reference docs can be found in [`docs/wikicat/processing.md`](docs/wikicat/processing.md)
+> **Note** The reference can be found on the [doc page](https://xhluca.github.io/wikicat/processing) or in [`docs/wikicat/processing.md`](docs/wikicat/processing.md)
 
 To install the processing tools, run:
 
@@ -85,7 +86,7 @@ The results will be saved in `~/.wikicat_data/category_graph_<yyyy>_<mm>_<dd>.js
 
 *`wikicat.viewer` is an application that lets you visually explore a category graph*
 
-> **Note** The reference docs can be found in [`docs/wikicat/viewer.md`](docs/wikicat/viewer.md)
+> **Note** The reference can be found on the [doc page](https://xhluca.github.io/wikicat/viewer) or in [`docs/wikicat/viewer.md`](docs/wikicat/viewer.md)
 
 To install the viewer, run:
 

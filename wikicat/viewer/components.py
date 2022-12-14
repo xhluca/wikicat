@@ -45,30 +45,39 @@ class Dropdowns(NamedTuple):
 
 
 def inline_div(children, **kwargs) -> html.Div:
+    """
+    Create a div with inline-block display style.
+    """
     return html.Div(children, style={"display": "inline-block"}, **kwargs)
 
 
-def build_cytoscape_graph(root: Page, id="cytoscape-graph") -> cyto.Cytoscape:
-    root_node = {
-        "data": {"id": root.id, "label": root.title},
-        "classes": root.namespace + " root",
-    }
-    default_stylesheet = [
-        {
-            "selector": ".root",
-            "style": {
-                "background-color": "#020202",
-            },
-        },
+def generate_cytoscape_stylesheet(
+    root_color="red",
+    article_color="#9097C0",
+    category_color="#503B31",
+    selected_node_border_color="blue",
+    edge_color="#705d56",
+) -> list:
+    """
+    Generate a stylesheet for the Cytoscape graph. The stylesheet is a list of
+    dictionaries, each of which contains a selector and a style. The selector
+    is a CSS-style string that specifies which elements the style should be applied to.
+    The style is a dictionary that specifies the CSS style to be applied to the elements.
+
+    The parameters are the colors to be used for the different elements. If you want to
+    have more control over the style, you can use the
+    [Cytoscape documentation](https://dash.plotly.com/cytoscape/styling) to create your own.
+    """
+    return [
         {
             "selector": ".category",
             "style": {
-                "background-color": "#503B31",
+                "background-color": category_color,
             },
         },
         {
             "selector": ".article",
-            "style": {"background-color": "#9097C0", "shape": "square"},
+            "style": {"background-color": article_color, "shape": "square"},
         },
         {
             "selector": "node",
@@ -77,8 +86,8 @@ def build_cytoscape_graph(root: Page, id="cytoscape-graph") -> cyto.Cytoscape:
         {
             "selector": "edge",
             "style": {
-                "mid-target-arrow-color": "#705d56",
-                "line-color": "#705d56",
+                "mid-target-arrow-color": edge_color,
+                "line-color": edge_color,
                 "mid-target-arrow-shape": "triangle",
                 "arrow-scale": 1.5,
             },
@@ -87,17 +96,32 @@ def build_cytoscape_graph(root: Page, id="cytoscape-graph") -> cyto.Cytoscape:
             "selector": "node:selected",
             "style": {
                 "border-width": 3,
-                "border-color": "blue",
+                "border-color": selected_node_border_color,
             },
         },
         {
             "selector": ".root",
             "style": {
-                "background-color": "red",
+                "background-color": root_color,
                 "shape": "star",
             },
         },
     ]
+
+
+def build_cytoscape_graph(
+    root: Page, id="cytoscape-graph", stylesheet=None
+) -> cyto.Cytoscape:
+    """
+    Build a Cytoscape graph from a root node. If no stylesheet is provided, a default one is generated.
+    """
+    root_node = {
+        "data": {"id": root.id, "label": root.title},
+        "classes": root.namespace + " root",
+    }
+
+    if stylesheet is None:
+        stylesheet = generate_cytoscape_stylesheet()
 
     cyto_graph = cyto.Cytoscape(
         id=id,
@@ -108,13 +132,16 @@ def build_cytoscape_graph(root: Page, id="cytoscape-graph") -> cyto.Cytoscape:
             "directed": True,
             "roots": [root_node["data"]["id"]],
         },
-        stylesheet=default_stylesheet,
+        stylesheet=stylesheet,
     )
 
     return cyto_graph
 
 
 def build_dropdowns(cg: CategoryGraph, id="dd-choose-tlc") -> Dropdowns:
+    """
+    Build a dropdown to choose a top-level category.
+    """
     return Dropdowns(
         choose_tlc=dbc.Select(
             id=id,
@@ -126,13 +153,27 @@ def build_dropdowns(cg: CategoryGraph, id="dd-choose-tlc") -> Dropdowns:
     )
 
 
-def build_panel(btn: Buttons, inp: Inputs, md: Markdowns, dd_choose_tlc) -> html.Div:
+def build_panel(btn: Buttons, inp: Inputs, md: Markdowns, dd: Dropdowns) -> html.Div:
+    """
+    Build the panel with the controls.
+
+    Parameters
+    ----------
+    btn : Buttons
+        Buttons to update the graph, show the path, and reset the graph.
+    inp : Inputs
+        Inputs to choose an article.
+    md : Markdowns
+        Markdowns to display the clicked node.
+    dd : Dropdowns
+        Dropdowns to choose a top-level category.
+    """
     panel = html.Div(
         [
             dbc.Row(
                 dbc.ButtonGroup([btn.update_graph, btn.show_path, btn.reset_graph]),
             ),
-            dd_choose_tlc,
+            dd.choose_tlc,
             inp.choose_article,
             md.clicked_node,
         ]
@@ -142,6 +183,9 @@ def build_panel(btn: Buttons, inp: Inputs, md: Markdowns, dd_choose_tlc) -> html
 
 
 def build_stores(root_id, id="store-selected-nodes") -> Stores:
+    """
+    Build a Dash `dcc.Store` to keep track of the selected nodes.
+    """
     return Stores(selected_nodes=dcc.Store(id=id, data=[root_id]))
 
 
@@ -149,6 +193,9 @@ def build_checklists(
     id_children_to_display="cl-children-to-display",
     id_parents_to_display="cl-parents-to-display",
 ) -> Checklists:
+    """
+    Build checklists to display the children and parents of a node.
+    """
     return Checklists(
         children_to_display=dbc.Checklist(
             id=id_children_to_display,
@@ -168,6 +215,9 @@ def build_buttons(
     id_reset_graph="btn-reset-graph",
     id_show_path="btn-show-path",
 ) -> Buttons:
+    """
+    Build buttons to update the graph, show the path, and reset the graph.
+    """
     return Buttons(
         update_graph=dbc.Button(
             id=id_update_graph,
@@ -192,6 +242,9 @@ def build_buttons(
 
 
 def build_cards(cl: Checklists, sw: Switches) -> Cards:
+    """
+    Build cards to display the children and parents of a node.
+    """
     return Cards(
         children_to_display=dbc.Card(
             [
@@ -223,6 +276,9 @@ def build_cards(cl: Checklists, sw: Switches) -> Cards:
 def build_switches(
     id_parents="switch-parents", id_children="switch-children"
 ) -> Switches:
+    """
+    Build switches that can select all/none of the children and parents of a node to be displayed.
+    """
     switch_style = {"margin-left": "15px", "display": "inline-block"}
     return Switches(
         children=dbc.Switch(id=id_children, value=False, style=switch_style),
@@ -231,6 +287,9 @@ def build_switches(
 
 
 def build_markdowns() -> Markdowns:
+    """
+    Build a dash `dcc.Markdown` component to display information about the clicked node.
+    """
     return Markdowns(
         clicked_node=dcc.Markdown(
             id="md-clicked-node",
@@ -241,6 +300,9 @@ def build_markdowns() -> Markdowns:
 
 
 def build_inputs() -> Inputs:
+    """
+    Build an input to choose an article name (which will be green if the article exists)
+    """
     return Inputs(
         choose_article=dbc.Input(
             id="inp-choose-article", placeholder="Write name of article..."
@@ -248,7 +310,25 @@ def build_inputs() -> Inputs:
     )
 
 
-def build_layout(cyto_graph, panel, cards_column, sto: Stores) -> dbc.Container:
+def build_layout(
+    cyto_graph: cyto.Cytoscape, panel: html.Div, cards_column: html.Div, sto: Stores
+) -> dbc.Container:
+    """
+    Build the layout of the app. The layout is a `dbc.Container` with a `dbc.Row` with three columns:
+    - the first column contains the graph
+    - the second column contains the panel with the controls
+    - the third column contains the cards with the children and parents of a node
+
+    Examples
+    --------
+    >>> import dash
+    >>> ...
+    >>> app = dash.Dash(__name__)
+    >>> ...
+    >>> app.layout = build_layout(cyto_graph, panel, cards_column, sto)
+    >>> ...
+    >>> app.run_server(debug=True)
+    """
     return dbc.Container(
         [
             dbc.Row(
@@ -265,6 +345,9 @@ def build_layout(cyto_graph, panel, cards_column, sto: Stores) -> dbc.Container:
 
 
 def build_card_column(cards: Cards) -> html.Div:
+    """
+    Build a column with the cards to display the children and parents of a node.
+    """
     return html.Div(
         [cards.children_to_display, html.Br(), cards.parents_to_display],
     )

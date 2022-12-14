@@ -5,6 +5,21 @@ from . import run
 
 
 def build_parser():
+    """
+    Builds the argument parser for the `wikicat.viewer` module. The parser is used
+    to parse the command line arguments when running the `wikicat.viewer` module.
+
+    To learn how to use `wikicat.viewer`, run:
+    ```
+    python -m wikicat.viewer --help
+    ```
+
+    Returns
+    -------
+    argparse.ArgumentParser
+        The argument parser for the `wikicat.viewer` module.
+    
+    """
     parser = argparse.ArgumentParser(
         description="""
         Run a Dash app to explore a category graph.
