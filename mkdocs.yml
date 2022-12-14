@@ -11,3 +11,5 @@ nav:
 markdown_extensions:
   - pymdownx.highlight
   - pymdownx.superfences
+
+edit_uri: blob/main/docs/

@@ -1,5 +1,19 @@
 # Reference for `wikicat.processing`
 
+# Reference for `wikicat.processing.download_dump`
+
+## `parse_args`
+
+```python
+wikicat.processing.download_dump.parse_args()
+```
+
+## `main`
+
+```python
+wikicat.processing.download_dump.main(year, month, day, save_dir, base_url="https://archive.org/download/", name_prefix="enwiki-")
+```
+
 # Reference for `wikicat.processing.generate_graph`
 
 ## `generate_graph`

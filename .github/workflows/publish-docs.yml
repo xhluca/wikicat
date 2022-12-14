@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - improve-documentations
 jobs:
   # build job
   build:
