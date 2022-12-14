@@ -50,7 +50,7 @@ By default, the path will be `~/.wikicat_data/`, but the JSON can be stored anyw
 
 *`wikicat.processing` is a command line interface (CLI) for downloading and processing the data*
 
-> **Note** The reference can be found on the [doc page](https://xhluca.github.io/wikicat/processing) or in [`docs/wikicat/processing.md`](docs/wikicat/processing.md)
+> **Note** The reference can be found on the [doc page](https://xhluca.github.io/wikicat/wikicat/processing) or in [`docs/wikicat/processing.md`](docs/wikicat/processing.md)
 
 To install the processing tools, run:
 
@@ -86,7 +86,7 @@ The results will be saved in `~/.wikicat_data/category_graph_<yyyy>_<mm>_<dd>.js
 
 *`wikicat.viewer` is an application that lets you visually explore a category graph*
 
-> **Note** The reference can be found on the [doc page](https://xhluca.github.io/wikicat/viewer) or in [`docs/wikicat/viewer.md`](docs/wikicat/viewer.md)
+> **Note** The reference can be found on the [doc page](https://xhluca.github.io/wikicat/wikicat/viewer) or in [`docs/wikicat/viewer.md`](docs/wikicat/viewer.md)
 
 To install the viewer, run:
 
