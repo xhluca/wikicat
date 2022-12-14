@@ -5,13 +5,14 @@ from textwrap import dedent
 
 from pathlib import Path
 
+
 def recursive_infer_attribute_ast(obj: ast.Attribute):
     lst = []
 
     while isinstance(obj, ast.Attribute):
         lst.append(obj.attr)
         obj = obj.value
-    
+
     lst.append(obj.id)
     return reversed(lst)
 
@@ -309,7 +310,7 @@ def parse_content_from_ast(tree: ast.Module) -> dict:
             for node in cls_.body:
                 if not isinstance(node, ast.FunctionDef):
                     continue
-                
+
                 if node.name.startswith("_") and not node.name.endswith("__"):
                     continue
 
@@ -320,10 +321,41 @@ def parse_content_from_ast(tree: ast.Module) -> dict:
                     name = f"{cls_.name}.{node.name}"
                     remove_self = False
 
-                node_contents[name] = extract_content_from_ast(node, remove_self=remove_self)
+                node_contents[name] = extract_content_from_ast(
+                    node, remove_self=remove_self
+                )
                 node_contents[name]["class"] = cls_.name
 
     return node_contents
+
+
+def build_globed_sources(sources):
+    sources_globed = []
+    for s in sources:
+        sources_globed.extend(glob.glob(s))
+    sources_globed = sorted(sources_globed)
+    return sources_globed
+
+
+def build_docs(sources_globed):
+    doc_page = ""
+
+    for source in sources_globed:
+        source = Path(source)
+        with open(source, "r") as f:
+            tree = ast.parse(f.read())
+
+        node_contents = parse_content_from_ast(tree)
+        module_prefix = (
+            ".".join(source.parts).replace(".py", "").replace(".__init__", "")
+        )
+        doc_page_part = format_module_from_content(
+            node_contents, module_prefix=module_prefix
+        )
+        doc_page += doc_page_part
+
+    return doc_page
+
 
 if __name__ == "__main__":
     with open("scripts/docs/render_paths.json", "r") as f:
@@ -332,32 +364,13 @@ if __name__ == "__main__":
     for target, source_lst in render_paths.items():
         target = Path(target)
         target.parent.mkdir(parents=True, exist_ok=True)
+        sources_globed = build_globed_sources(source_lst)
 
-        doc_page = ""
-
-        source_lst_globed = []
-        for s in source_lst:
-            source_lst_globed.extend(glob.glob(s))
-        source_lst_globed = sorted(source_lst_globed)
-        nodes = {}
-        
         print("Target doc file:", target)
-        print("Parsing python files:", source_lst_globed)
-        print('-'*50)
+        print("Parsing python files:", sources_globed)
+        print("-" * 50)
 
-        for source in source_lst_globed:
-            source = Path(source)
-            with open(source, "r") as f:
-                tree = ast.parse(f.read())
-
-            node_contents = parse_content_from_ast(tree)
-            module_prefix = ".".join(source.parts).replace(".py", "").replace(".__init__", "")
-            doc_page_part = format_module_from_content(
-                node_contents, module_prefix=module_prefix
-            )
-            nodes[source] = node_contents
-            doc_page += doc_page_part
+        doc_page = build_docs(sources_globed)
 
         with open(target, "w") as f:
             f.write(doc_page)
-
