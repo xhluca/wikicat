@@ -5,10 +5,10 @@ to a JSON file with the following structure.
 Usage example:
 
 python -m wikicat.processing.generate_graph \
-    --load_dir /path/to/raw/csv \
-    --save_dir /path/to/save/json \
-    --load_name full_catgraph_20181220.csv \
-    --save_name category_graph_20181220.json
+    --year 2018 \
+    --month 12 \
+    --day 20 \
+    --base_dir /path/to/save/intermediate/files
 """
 import argparse
 import json
@@ -120,6 +120,7 @@ def main(year, month, day, load_dir, save_dir, load_name, save_name):
 
     load_dir = Path(load_dir).expanduser()
     save_dir = Path(save_dir).expanduser()
+    load_dir = load_dir / f"enwiki_{year}{month:02d}{day:02d}"
     save_dir.mkdir(exist_ok=True)
 
     raw_df = pd.read_csv(load_dir / load_name, na_filter=False)
