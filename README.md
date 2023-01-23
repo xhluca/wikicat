@@ -82,6 +82,8 @@ python3 -m wikicat.processing.process_dump \
         --base_dir /path/to/save/intermediate/files
 ```
 
+This will output two csvs with the relevant tables' data to your `save_dir`.
+
 Once you have the intermediate files, merge them into a single category graph csv:
 
 ```bash
@@ -93,6 +95,8 @@ python3 -m wikicat.processing.merge_tables \
         --day <dd> \
         --base_dir /path/to/save/intermediate/files
 ```
+
+This will output a single csv with the relevant category graph links to your `save_dir`.
 
 Now, having done all the preprocessing necessary, generate your final
 JSON-formatted readable category graph:
