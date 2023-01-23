@@ -15,7 +15,7 @@ import argparse
 import json
 from pathlib import Path
 
-def main(page_csv_filepath, category_csv_filepath, save_filepath):
+def merge_tables(page_csv_filepath, category_csv_filepath):
     page_df = pd.read_csv(page_csv_filepath, \
             usecols = ['page_id', 'page_title', 'page_namespace'], \
             dtype={'page_id': np.int32, 'page_title': str, \
@@ -38,11 +38,37 @@ def main(page_csv_filepath, category_csv_filepath, save_filepath):
 
     full_df.sort_index(inplace=True)
 
-    # Save the full dataframe to a CSV file
-    full_df.to_csv(save_filepath)
-
     return full_df
 
+def main(
+        year,
+        month,
+        day,
+        page_csv_filepath,
+        category_csv_filepath,
+        save_filepath,
+    ):
+    base_dir = Path(base_dir).expanduser()
+    base_dir.mkdir(parents=True, exist_ok=True)
+
+    int_dir = base_dir / f"enwiki_{year}{month:02d}{day:02d}"
+    int_dir.mkdir(exist_ok=True)
+
+    # default names for filepath arguments
+    if page_csv_filepath == "None":
+        page_csv_filepath = int_dir / f"enwiki-page.csv"
+    
+    if category_csv_filepath == "None":
+        category_csv_filepath = int_dir / f"enwiki-categorylinks.csv"
+    
+    if save_filepath == "None":
+        save_filepath = int_dir / f"full_catgraph.csv"
+
+    # merge the tables
+    full_df = merge_tables(page_csv_filepath, category_csv_filepath)
+
+    # Save the full dataframe to a CSV file
+    full_df.to_csv(save_filepath)
 
 def parse_args():
     parser = argparse.ArgumentParser(
@@ -54,23 +80,28 @@ def parse_args():
         """,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
+
+    parser.add_argument("--year", type=int, required=True, help="Year of the dump")
+    parser.add_argument("--month", type=int, required=True, help="Month of the year")
+    parser.add_argument("--day", type=int, required=True, help="Day of the month")
+
     parser.add_argument(
         "--page_csv_filepath",
         type=str,
         help="Path to the page CSV file",
-        default="~/.wikicat_data/page_table.csv",
+        default="None",
     )
     parser.add_argument(
         "--category_csv_filepath",
         type=str,
         help="Path to the category CSV file",
-        default="~/.wikicat_data/category_table.csv",
+        default="None",
     )
     parser.add_argument(
         "--save_filepath",
         type=str,
         help="Path to save the merged CSV file to",
-        default="~/.wikicat_data/full_catgraph.csv",
+        default="None",
     )
     return parser.parse_args()
 

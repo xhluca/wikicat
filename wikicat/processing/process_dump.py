@@ -20,7 +20,7 @@ import kwnlp_sql_parser
 # TODO
 # Update requirements.txt to include pandas and kwnlp_sql_parser with current version
 
-def sql_dump_to_csv(dumpfile, output_filename=None, batch_size=500_000_000, use_2018_schema=False):
+def process_dump(dumpfile, output_filename=None, batch_size=500_000_000, use_2018_schema=False):
     print(f"Converting {dumpfile} into csv...")
 
     if use_2018_schema:
@@ -67,10 +67,10 @@ def main(
         category_table_filepath = int_dir / "enwiki-categorylinks.sql.gz"
 
     if page_csv_outpath is None:
-        page_csv_outpath = int_dir / "page.csv"
+        page_csv_outpath = int_dir / "enwiki-page.csv"
 
     if cat_csv_outpath is None:
-        cat_csv_outpath = int_dir / "categorylinks.csv"
+        cat_csv_outpath = int_dir / "enwiki-categorylinks.csv"
 
     # fix issue with argparse booleans
     if use_2018_schema == "auto":
@@ -78,8 +78,8 @@ def main(
         if "2018" in str(int_dir):
             use_2018_schema = True
 
-    sql_dump_to_csv(page_table_filepath, page_csv_outpath, use_2018_schema=use_2018_schema)
-    sql_dump_to_csv(category_table_filepath, cat_csv_outpath, use_2018_schema=use_2018_schema)
+    process_dump(page_table_filepath, output_filename=page_csv_outpath, use_2018_schema=use_2018_schema)
+    process_dump(category_table_filepath, output_filename=cat_csv_outpath, use_2018_schema=use_2018_schema)
 
 
 def parse_args():
