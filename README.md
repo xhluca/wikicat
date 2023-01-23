@@ -68,10 +68,37 @@ python3 -m wikicat.processing.download_dump \
         --day <dd>
 ```
 
-If you do not specify `--save_dir`, it will automatically be saved to `~/.wikicat_data`. Once you have downloaded a database dump, you can generate the graph with:
+If you do not specify `--save_dir`, it will automatically be saved to `~/.wikicat_data`. 
+
+Once you have downloaded a database dump, process the dump into csv record files with:
 
 ```bash
-# Process DB dump into readable category graph
+# Process individual database dump (.sql.gz) files into
+# csv record files for further processing
+python3 -m wikicat.processing.process_dump \
+        --year <yyyy> \
+        --month <mm> \
+        --day <dd> \
+        --base_dir /path/to/save/intermediate/files
+```
+
+Once you have the intermediate files, merge them into a single category graph csv:
+
+```bash
+# Take the individual table csvs and merge them into a single
+# category graph csv
+python3 -m wikicat.processing.merge_tables \
+        --year <yyyy> \
+        --month <mm> \
+        --day <dd> \
+        --base_dir /path/to/save/intermediate/files
+```
+
+Now, having done all the preprocessing necessary, generate your final
+JSON-formatted readable category graph:
+
+```bash
+# Process intermediate files into readable category graph
 python3 -m wikicat.processing.generate_graph \
         --year <yyyy> \
         --month <mm> \
