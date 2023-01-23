@@ -49,7 +49,8 @@ def main(
 ):
     postfix = ("-page", "-categorylinks")
     save_dir = Path(save_dir).expanduser()
-    save_dir.mkdir(exist_ok=True)
+    save_dir = save_dir / f"enwiki_{year}{month:02d}{day:02d}"
+    save_dir.mkdir(parents=True, exist_ok=True)
 
     # Format the URL
     base_name = f"{name_prefix}{year}{month:02d}{day:02d}"

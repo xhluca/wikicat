@@ -68,7 +68,7 @@ python3 -m wikicat.processing.download_dump \
         --day <dd>
 ```
 
-If you do not specify `--save_dir`, it will automatically be saved to `~/.wikicat_data`. 
+If you do not specify `--save_dir`, it will automatically be saved to `~/.wikicat_data/enwiki_{DATE}`. 
 
 Once you have downloaded a database dump, process the dump into csv record files with:
 
