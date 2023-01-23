@@ -110,8 +110,13 @@ def generate_graph(df) -> dict:
     return graph_json
 
 
-def main(load_dir, save_dir, load_name, save_name):
+def main(year, month, day, load_dir, save_dir, load_name, save_name):
     import pandas as pd
+
+    if load_name == "None":
+        load_name = f"full_catgraph_{year}{month:02d}{day:02d}.csv"
+    if save_name == "None":
+        save_name = f"category_graph_{year}{month:02d}{day:02d}.json"
 
     load_dir = Path(load_dir).expanduser()
     save_dir = Path(save_dir).expanduser()
@@ -134,6 +139,9 @@ def parse_args():
         """,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
+    parser.add_argument("--year", type=int, required=True, help="Year of the dump")
+    parser.add_argument("--month", type=int, required=True, help="Month of the year")
+    parser.add_argument("--day", type=int, required=True, help="Day of the month")
     parser.add_argument(
         "--load_dir", type=str, help="Directory to load the raw CSV file from", default="~/.wikicat_data"
     )
@@ -143,13 +151,13 @@ def parse_args():
     parser.add_argument(
         "--load_name",
         type=str,
-        default="full_catgraph_20181220.csv",
+        default="None",
         help="Name of the raw CSV file",
     )
     parser.add_argument(
         "--save_name",
         type=str,
-        default="category_graph_20181220.json",
+        default="None",
         help="Name of the JSON file",
     )
     return parser.parse_args()
