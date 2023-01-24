@@ -7,9 +7,10 @@ category graph.
 Usage example:
 
 python -m wikicat.processing.merge_tables \
-    --page_csv_filepath /path/to/page/csv \
-    --category_csv_filepath /path/to/category/csv \
-    --save_filepath /path/to/save/csv \
+    --year 2018 \
+    --month 12 \
+    --day 20 \
+    --base_dir /path/to/save/intermediate/files
 """
 import argparse
 import json
