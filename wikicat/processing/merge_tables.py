@@ -96,19 +96,19 @@ def parse_args():
     parser.add_argument(
         "--page_csv_load_path",
         type=str,
-        help="Path to the page CSV file",
+        help="Full path (including filename) to the page CSV file (overrides yyyy/mm/dd args)",
         default="None",
     )
     parser.add_argument(
         "--category_csv_load_path",
         type=str,
-        help="Path to the category CSV file",
+        help="Full path (including filename) to the category CSV file (overrides yyyy/mm/dd args)",
         default="None",
     )
     parser.add_argument(
         "--save_filepath",
         type=str,
-        help="Path to save the merged CSV file to",
+        help="Full path (including filename) to save the merged CSV file to (defaults to {intermediate_dir}/full_catgraph.json)",
         default="None",
     )
     return parser.parse_args()

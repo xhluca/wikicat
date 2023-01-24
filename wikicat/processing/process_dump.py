@@ -110,25 +110,25 @@ def parse_args():
     parser.add_argument(
         "--page_table_load_path", 
         type=str, 
-        help="Complete load path (including filename) of the page table dump", 
+        help="Complete load path (including filename) of the page table dump (overrides yyyy/mm/dd args)", 
         default="None"
     )
     parser.add_argument(
         "--category_table_load_path", 
         type=str, 
-        help="Complete load path (including filename) of the categorylinks table dump", 
+        help="Complete load path (including filename) of the categorylinks table dump (overrides yyyy/mm/dd args)", 
         default="None"
     )
     parser.add_argument(
         "--page_csv_save_path", 
         type=str, 
-        help="Complete save path (including filename) for the page table csv (for further processing)", 
+        help="Complete save path (including filename) for the page table csv (for further processing) (overrides yyyy/mm/dd args)", 
         default="None"
     )
     parser.add_argument(
         "--cat_csv_save_path", 
         type=str, 
-        help="Complete save path (including filename) for the categorylinks table csv (for further processing)", 
+        help="Complete save path (including filename) for the categorylinks table csv (for further processing) (overrides yyyy/mm/dd args)", 
         default="None"
     )
     parser.add_argument(
