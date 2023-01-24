@@ -69,10 +69,10 @@ def main(
         category_table_filepath = int_dir / f"enwiki-{year}{month:02d}{day:02d}-categorylinks.sql.gz"
 
     if page_csv_outpath == "None":
-        page_csv_outpath = int_dir / "enwiki-page.csv"
+        page_csv_outpath = int_dir / "page.csv"
 
     if cat_csv_outpath == "None":
-        cat_csv_outpath = int_dir / "enwiki-categorylinks.csv"
+        cat_csv_outpath = int_dir / "categorylinks.csv"
 
     # fix issue with argparse booleans
     if use_2018_schema == "auto":
