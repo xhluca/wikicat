@@ -48,8 +48,8 @@ def main(
         month,
         day,
         base_dir,
-        page_csv_filepath,
-        category_csv_filepath,
+        page_csv_load_path,
+        category_csv_load_path,
         save_filepath,
     ):
     base_dir = Path(base_dir).expanduser()
@@ -59,17 +59,17 @@ def main(
     int_dir.mkdir(exist_ok=True)
 
     # default names for filepath arguments
-    if page_csv_filepath == "None":
-        page_csv_filepath = int_dir / f"page.csv"
+    if page_csv_load_path == "None":
+        page_csv_load_path = int_dir / f"page.csv"
     
-    if category_csv_filepath == "None":
-        category_csv_filepath = int_dir / f"categorylinks.csv"
+    if category_csv_load_path == "None":
+        category_csv_load_path = int_dir / f"categorylinks.csv"
     
     if save_filepath == "None":
         save_filepath = int_dir / f"full_catgraph.csv"
 
     # merge the tables
-    full_df = merge_tables(page_csv_filepath, category_csv_filepath)
+    full_df = merge_tables(page_csv_load_path, category_csv_load_path)
 
     # Save the full dataframe to a CSV file
     full_df.to_csv(save_filepath)
@@ -94,13 +94,13 @@ def parse_args():
     )
 
     parser.add_argument(
-        "--page_csv_filepath",
+        "--page_csv_load_path",
         type=str,
         help="Path to the page CSV file",
         default="None",
     )
     parser.add_argument(
-        "--category_csv_filepath",
+        "--category_csv_load_path",
         type=str,
         help="Path to the category CSV file",
         default="None",

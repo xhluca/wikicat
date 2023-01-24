@@ -47,10 +47,10 @@ def main(
         month,
         day,
         base_dir,
-        page_table_filepath,
-        category_table_filepath,
-        page_csv_outpath,
-        cat_csv_outpath,
+        page_table_load_path,
+        category_table_load_path,
+        page_csv_save_path,
+        cat_csv_save_path,
         use_2018_schema,
         batch_size
     ):
@@ -62,17 +62,17 @@ def main(
     int_dir.mkdir(exist_ok=True)
 
     # default names for filepaths
-    if page_table_filepath == "None":
-        page_table_filepath = int_dir / f"enwiki-{year}{month:02d}{day:02d}-page.sql.gz"
+    if page_table_load_path == "None":
+        page_table_load_path = int_dir / f"enwiki-{year}{month:02d}{day:02d}-page.sql.gz"
 
-    if category_table_filepath == "None":
-        category_table_filepath = int_dir / f"enwiki-{year}{month:02d}{day:02d}-categorylinks.sql.gz"
+    if category_table_load_path == "None":
+        category_table_load_path = int_dir / f"enwiki-{year}{month:02d}{day:02d}-categorylinks.sql.gz"
 
-    if page_csv_outpath == "None":
-        page_csv_outpath = int_dir / "page.csv"
+    if page_csv_save_path == "None":
+        page_csv_save_path = int_dir / "page.csv"
 
-    if cat_csv_outpath == "None":
-        cat_csv_outpath = int_dir / "categorylinks.csv"
+    if cat_csv_save_path == "None":
+        cat_csv_save_path = int_dir / "categorylinks.csv"
 
     # fix issue with argparse booleans
     if use_2018_schema == "auto":
@@ -80,14 +80,14 @@ def main(
         if "2018" in str(int_dir):
             use_2018_schema = True
 
-    if page_csv_outpath.is_file():
-        print(f"Skipping {page_csv_outpath}, already exists...")
+    if page_csv_save_path.is_file():
+        print(f"Skipping {page_csv_save_path}, already exists...")
     else:
-        process_dump(str(page_table_filepath), output_filename=str(page_csv_outpath), use_2018_schema=use_2018_schema, batch_size=batch_size)
-    if cat_csv_outpath.is_file():
-        print(f"Skipping {cat_csv_outpath}, already exists...")
+        process_dump(str(page_table_load_path), output_filename=str(page_csv_save_path), use_2018_schema=use_2018_schema, batch_size=batch_size)
+    if cat_csv_save_path.is_file():
+        print(f"Skipping {cat_csv_save_path}, already exists...")
     else:
-        process_dump(str(category_table_filepath), output_filename=str(cat_csv_outpath), use_2018_schema=use_2018_schema, batch_size=batch_size)
+        process_dump(str(category_table_load_path), output_filename=str(cat_csv_save_path), use_2018_schema=use_2018_schema, batch_size=batch_size)
 
 
 def parse_args():
@@ -108,27 +108,27 @@ def parse_args():
     )
 
     parser.add_argument(
-        "--page_table_filepath", 
+        "--page_table_load_path", 
         type=str, 
-        help="Filepath of the page table dump", 
+        help="Complete load path (including filename) of the page table dump", 
         default="None"
     )
     parser.add_argument(
-        "--category_table_filepath", 
+        "--category_table_load_path", 
         type=str, 
-        help="Filepath of the categorylinks table dump", 
+        help="Complete load path (including filename) of the categorylinks table dump", 
         default="None"
     )
     parser.add_argument(
-        "--page_csv_outpath", 
+        "--page_csv_save_path", 
         type=str, 
-        help="Output filename for th page table csv (for further processing)", 
+        help="Complete save path (including filename) for the page table csv (for further processing)", 
         default="None"
     )
     parser.add_argument(
-        "--cat_csv_outpath", 
+        "--cat_csv_save_path", 
         type=str, 
-        help="Output filename for the categorylinks table csv (for further processing)", 
+        help="Complete save path (including filename) for the categorylinks table csv (for further processing)", 
         default="None"
     )
     parser.add_argument(
