@@ -5,10 +5,10 @@ to a JSON file with the following structure.
 Usage example:
 
 python -m wikicat.processing.generate_graph \
-    --load_dir /path/to/raw/csv \
-    --save_dir /path/to/save/json \
-    --load_name full_catgraph_20181220.csv \
-    --save_name category_graph_20181220.json
+    --year 2018 \
+    --month 12 \
+    --day 20 \
+    --base_dir /path/to/save/intermediate/files
 """
 import argparse
 import json
@@ -110,12 +110,26 @@ def generate_graph(df) -> dict:
     return graph_json
 
 
-def main(load_dir, save_dir, load_name, save_name):
+def main(year, month, day, base_dir, load_dir, save_dir, load_name, save_name):
     import pandas as pd
 
-    load_dir = Path(load_dir).expanduser()
-    save_dir = Path(save_dir).expanduser()
-    save_dir.mkdir(exist_ok=True)
+    if load_name == "None":
+        load_name = f"full_catgraph.csv"
+    if save_name == "None":
+        save_name = f"category_graph.json"
+    
+    base_dir = Path(base_dir).expanduser()
+    base_dir.mkdir(parents=True, exist_ok=True)
+
+    int_dir = base_dir / f"enwiki_{year}{month:02d}{day:02d}"
+    int_dir.mkdir(exist_ok=True)
+
+    # default names for filepath arguments
+    if load_dir == "None":
+        load_dir = int_dir
+
+    if save_dir == "None":
+        save_dir = int_dir
 
     raw_df = pd.read_csv(load_dir / load_name, na_filter=False)
 
@@ -134,22 +148,28 @@ def parse_args():
         """,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
+    parser.add_argument("--year", type=int, required=True, help="Year of the dump")
+    parser.add_argument("--month", type=int, required=True, help="Month of the year")
+    parser.add_argument("--day", type=int, required=True, help="Day of the month")
     parser.add_argument(
-        "--load_dir", type=str, help="Directory to load the raw CSV file from", default="~/.wikicat_data"
+        "--base_dir", type=str, help="Base directory for intermediate files", default="~/.wikicat_data"
     )
     parser.add_argument(
-        "--save_dir", type=str, help="Directory to save the JSON file to", default="~/.wikicat_data"
+        "--load_dir", type=str, help="Directory to load the raw CSV file from", default="None"
+    )
+    parser.add_argument(
+        "--save_dir", type=str, help="Directory to save the JSON file to", default="None"
     )
     parser.add_argument(
         "--load_name",
         type=str,
-        default="full_catgraph_20181220.csv",
+        default="None",
         help="Name of the raw CSV file",
     )
     parser.add_argument(
         "--save_name",
         type=str,
-        default="category_graph_20181220.json",
+        default="None",
         help="Name of the JSON file",
     )
     return parser.parse_args()

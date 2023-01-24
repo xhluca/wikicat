@@ -39,6 +39,10 @@ def parse_args():
     return parser.parse_args()
 
 
+# prepare progressbar
+def show_progress(block_num, block_size, total_size):
+    print(round(block_num * block_size / total_size *100,2), end="\r")
+
 def main(
     year,
     month,
@@ -49,7 +53,8 @@ def main(
 ):
     postfix = ("-page", "-categorylinks")
     save_dir = Path(save_dir).expanduser()
-    save_dir.mkdir(exist_ok=True)
+    save_dir = save_dir / f"enwiki_{year}{month:02d}{day:02d}"
+    save_dir.mkdir(parents=True, exist_ok=True)
 
     # Format the URL
     base_name = f"{name_prefix}{year}{month:02d}{day:02d}"
@@ -61,7 +66,7 @@ def main(
         print("Downloading:", dump_url)
         dump_path = save_dir / dump_name
 
-        urlretrieve(dump_url, dump_path)
+        urlretrieve(dump_url, dump_path, show_progress)
 
 
 if __name__ == "__main__":

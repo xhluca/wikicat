@@ -68,10 +68,41 @@ python3 -m wikicat.processing.download_dump \
         --day <dd>
 ```
 
-If you do not specify `--save_dir`, it will automatically be saved to `~/.wikicat_data`. Once you have downloaded a database dump, you can generate the graph with:
+If you do not specify `--save_dir`, it will automatically be saved to `~/.wikicat_data/enwiki_{DATE}`. 
+
+Once you have downloaded a database dump, process the dump into csv record files with:
 
 ```bash
-# Process DB dump into readable category graph
+# Process individual database dump (.sql.gz) files into
+# csv record files for further processing
+python3 -m wikicat.processing.process_dump \
+        --year <yyyy> \
+        --month <mm> \
+        --day <dd> \
+        --base_dir /path/to/save/intermediate/files
+```
+
+This may take a while depending on your hardware, and will need plenty of RAM. It will output two csvs with the relevant tables' data to your `save_dir`.
+
+Once you have the intermediate files, merge them into a single category graph csv:
+
+```bash
+# Take the individual table csvs and merge them into a single
+# category graph csv
+python3 -m wikicat.processing.merge_tables \
+        --year <yyyy> \
+        --month <mm> \
+        --day <dd> \
+        --base_dir /path/to/save/intermediate/files
+```
+
+This should take under 30 mins depending on your hardware, and will output a single csv with the relevant category graph links to your `save_dir`.
+
+Now, having done all the preprocessing necessary, generate your final
+JSON-formatted readable category graph:
+
+```bash
+# Process intermediate files into readable category graph
 python3 -m wikicat.processing.generate_graph \
         --year <yyyy> \
         --month <mm> \
@@ -79,7 +110,7 @@ python3 -m wikicat.processing.generate_graph \
         --save_prefix category_graph
 ```
 
-The results will be saved in `~/.wikicat_data/category_graph_<yyyy>_<mm>_<dd>.json`.
+The results will be saved in `~/.wikicat_data/enwiki_<yyyy>_<mm>_<dd>/category_graph.json`.
 
 
 ## `wikicat.viewer`
@@ -98,7 +129,7 @@ To run the viewer, run:
 
 ```bash
 python3 -m wikicat.viewer \
-        --load_name category_graph_<yyyy>_<mm>_<dd>.json \
+        --load_name `~/.wikicat_data/enwiki_<yyyy>_<mm>_<dd>/category_graph.json` \
         --port 8050
 ```
 
