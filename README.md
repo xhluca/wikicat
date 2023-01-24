@@ -110,7 +110,7 @@ python3 -m wikicat.processing.generate_graph \
         --save_prefix category_graph
 ```
 
-The results will be saved in `~/.wikicat_data/category_graph_<yyyy>_<mm>_<dd>.json`.
+The results will be saved in `~/.wikicat_data/enwiki_<yyyy>_<mm>_<dd>/category_graph.json`.
 
 
 ## `wikicat.viewer`
@@ -129,7 +129,7 @@ To run the viewer, run:
 
 ```bash
 python3 -m wikicat.viewer \
-        --load_name category_graph_<yyyy>_<mm>_<dd>.json \
+        --load_name `~/.wikicat_data/enwiki_<yyyy>_<mm>_<dd>/category_graph.json` \
         --port 8050
 ```
 
