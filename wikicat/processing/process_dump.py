@@ -20,20 +20,21 @@ import kwnlp_sql_parser
 # TODO
 # Update requirements.txt to include pandas and kwnlp_sql_parser with current version
 
-def process_dump(dumpfile, output_filename=None, batch_size=500_000_000, use_2018_schema=False):
+def process_dump(dumpfile, output_filename=None, batch_size=50_000_000, use_2018_schema=False):
     print(f"Converting {dumpfile} into csv...")
 
     if use_2018_schema:
         print("Using 2018 schema")
-        original_col_list = kwnlp_sql_parser.wp_sql_patterns._TABLE_COLUMN_PATTERNS['page'].copy()
-        page_col_l = kwnlp_sql_parser.wp_sql_patterns._TABLE_COLUMN_PATTERNS['page'].copy()
-        page_r = kwnlp_sql_parser.WikipediaSqlColumn("page_restrictions", kwnlp_sql_parser.wp_sql_patterns.SINGLE_QUOTED_ANYTHING)
+        # copy original tuple
+        original_col_list = tuple(list(kwnlp_sql_parser.wp_sql_patterns._TABLE_COLUMN_PATTERNS['page']))
+        page_col_l = list(kwnlp_sql_parser.wp_sql_patterns._TABLE_COLUMN_PATTERNS['page'])
+        # page_r = kwnlp_sql_parser.WikipediaSqlColumn("page_restrictions", kwnlp_sql_parser.wp_sql_patterns.SINGLE_QUOTED_ANYTHING)
         page_c = kwnlp_sql_parser.WikipediaSqlColumn("page_counter", kwnlp_sql_parser.wp_sql_patterns.DIGITS)
-        page_col_l.insert(3, page_r)
+        # page_col_l.insert(3, page_r)
         page_col_l.insert(4, page_c)
         kwnlp_sql_parser.wp_sql_patterns._TABLE_COLUMN_PATTERNS['page'] = tuple(page_col_l)
     
-    wsd = kwnlp_sql_parser.WikipediaSqlDump(f)
+    wsd = kwnlp_sql_parser.WikipediaSqlDump(dumpfile)
 
     wsd.to_csv(batch_size=batch_size, outfile=str(output_filename))
 
@@ -50,7 +51,8 @@ def main(
         category_table_filepath,
         page_csv_outpath,
         cat_csv_outpath,
-        use_2018_schema="auto",
+        use_2018_schema,
+        batch_size
     ):
 
     base_dir = Path(base_dir).expanduser()
@@ -60,16 +62,16 @@ def main(
     int_dir.mkdir(exist_ok=True)
 
     # default names for filepaths
-    if page_table_filepath is None:
-        page_table_filepath = int_dir / "enwiki-page.sql.gz"
+    if page_table_filepath == "None":
+        page_table_filepath = int_dir / f"enwiki-{year}{month:02d}{day:02d}-page.sql.gz"
 
-    if category_table_filepath is None:
-        category_table_filepath = int_dir / "enwiki-categorylinks.sql.gz"
+    if category_table_filepath == "None":
+        category_table_filepath = int_dir / f"enwiki-{year}{month:02d}{day:02d}-categorylinks.sql.gz"
 
-    if page_csv_outpath is None:
+    if page_csv_outpath == "None":
         page_csv_outpath = int_dir / "enwiki-page.csv"
 
-    if cat_csv_outpath is None:
+    if cat_csv_outpath == "None":
         cat_csv_outpath = int_dir / "enwiki-categorylinks.csv"
 
     # fix issue with argparse booleans
@@ -78,8 +80,14 @@ def main(
         if "2018" in str(int_dir):
             use_2018_schema = True
 
-    process_dump(page_table_filepath, output_filename=page_csv_outpath, use_2018_schema=use_2018_schema)
-    process_dump(category_table_filepath, output_filename=cat_csv_outpath, use_2018_schema=use_2018_schema)
+    if page_csv_outpath.is_file():
+        print(f"Skipping {page_csv_outpath}, already exists...")
+    else:
+        process_dump(str(page_table_filepath), output_filename=str(page_csv_outpath), use_2018_schema=use_2018_schema, batch_size=batch_size)
+    if cat_csv_outpath.is_file():
+        print(f"Skipping {cat_csv_outpath}, already exists...")
+    else:
+        process_dump(str(category_table_filepath), output_filename=str(cat_csv_outpath), use_2018_schema=use_2018_schema, batch_size=batch_size)
 
 
 def parse_args():
@@ -126,6 +134,11 @@ def parse_args():
     parser.add_argument(
         "--use_2018_schema", type=str, help="Use the 2018 schema for the page table", default="auto"
     )
+
+    parser.add_argument(
+        "--batch_size", type=int, help="Adjust the batch size for the processing", default=1_000_000
+    )
+
     return parser.parse_args()
 
 

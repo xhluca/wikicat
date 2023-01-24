@@ -110,18 +110,26 @@ def generate_graph(df) -> dict:
     return graph_json
 
 
-def main(year, month, day, load_dir, save_dir, load_name, save_name):
+def main(year, month, day, base_dir, load_dir, save_dir, load_name, save_name):
     import pandas as pd
 
     if load_name == "None":
-        load_name = f"full_catgraph_{year}{month:02d}{day:02d}.csv"
+        load_name = f"full_catgraph.csv"
     if save_name == "None":
-        save_name = f"category_graph_{year}{month:02d}{day:02d}.json"
+        save_name = f"category_graph.json"
+    
+    base_dir = Path(base_dir).expanduser()
+    base_dir.mkdir(parents=True, exist_ok=True)
 
-    load_dir = Path(load_dir).expanduser()
-    save_dir = Path(save_dir).expanduser()
-    load_dir = load_dir / f"enwiki_{year}{month:02d}{day:02d}"
-    save_dir.mkdir(exist_ok=True)
+    int_dir = base_dir / f"enwiki_{year}{month:02d}{day:02d}"
+    int_dir.mkdir(exist_ok=True)
+
+    # default names for filepath arguments
+    if load_dir == "None":
+        load_dir = int_dir
+
+    if save_dir == "None":
+        save_dir = int_dir
 
     raw_df = pd.read_csv(load_dir / load_name, na_filter=False)
 
@@ -144,10 +152,13 @@ def parse_args():
     parser.add_argument("--month", type=int, required=True, help="Month of the year")
     parser.add_argument("--day", type=int, required=True, help="Day of the month")
     parser.add_argument(
-        "--load_dir", type=str, help="Directory to load the raw CSV file from", default="~/.wikicat_data"
+        "--base_dir", type=str, help="Base directory for intermediate files", default="~/.wikicat_data"
     )
     parser.add_argument(
-        "--save_dir", type=str, help="Directory to save the JSON file to", default="~/.wikicat_data"
+        "--load_dir", type=str, help="Directory to load the raw CSV file from", default="None"
+    )
+    parser.add_argument(
+        "--save_dir", type=str, help="Directory to save the JSON file to", default="None"
     )
     parser.add_argument(
         "--load_name",

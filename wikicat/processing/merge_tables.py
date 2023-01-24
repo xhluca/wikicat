@@ -16,11 +16,13 @@ import argparse
 import json
 from pathlib import Path
 
+import pandas as pd
+
 def merge_tables(page_csv_filepath, category_csv_filepath):
     page_df = pd.read_csv(page_csv_filepath, \
             usecols = ['page_id', 'page_title', 'page_namespace'], \
-            dtype={'page_id': np.int32, 'page_title': str, \
-                'page_namespace': np.int32}).set_index('page_id')
+            dtype={'page_id': 'int32', 'page_title': str, \
+                'page_namespace': 'int32'}).set_index('page_id')
 
     category_df = pd.read_csv(category_csv_filepath).set_index('cl_from')
 
@@ -45,6 +47,7 @@ def main(
         year,
         month,
         day,
+        base_dir,
         page_csv_filepath,
         category_csv_filepath,
         save_filepath,
@@ -57,10 +60,10 @@ def main(
 
     # default names for filepath arguments
     if page_csv_filepath == "None":
-        page_csv_filepath = int_dir / f"enwiki-page.csv"
+        page_csv_filepath = int_dir / f"page.csv"
     
     if category_csv_filepath == "None":
-        category_csv_filepath = int_dir / f"enwiki-categorylinks.csv"
+        category_csv_filepath = int_dir / f"categorylinks.csv"
     
     if save_filepath == "None":
         save_filepath = int_dir / f"full_catgraph.csv"
@@ -85,6 +88,10 @@ def parse_args():
     parser.add_argument("--year", type=int, required=True, help="Year of the dump")
     parser.add_argument("--month", type=int, required=True, help="Month of the year")
     parser.add_argument("--day", type=int, required=True, help="Day of the month")
+
+    parser.add_argument(
+        "--base_dir", type=str, help="Base directory for intermediate files", default="~/.wikicat_data"
+    )
 
     parser.add_argument(
         "--page_csv_filepath",

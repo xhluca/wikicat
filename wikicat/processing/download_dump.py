@@ -57,8 +57,7 @@ def main(
     save_dir.mkdir(parents=True, exist_ok=True)
 
     # Format the URL
-    #base_name = f"{name_prefix}{year}{month:02d}{day:02d}"
-    base_name = f"{name_prefix}"
+    base_name = f"{name_prefix}{year}{month:02d}{day:02d}"
     extension = "sql.gz"
 
     for p in postfix:
