@@ -7,7 +7,7 @@ from ..constants import ARTICLE, CATEGORY
 
 def bfs_with_backlinks(cg: CategoryGraph, article: Page, target: Page):
     """
-    Breadth-first search with backlinks. Returns a dictionary of {child: parent} pairs, 
+    Breadth-first search with backlinks. Returns a dictionary of {child: parent} pairs,
     linking the target category to the article. It does not necessarily return the shortest path.
     This function is meant to be used with the `extract_chain` function.
 
@@ -19,7 +19,7 @@ def bfs_with_backlinks(cg: CategoryGraph, article: Page, target: Page):
         The article to start the search from. It is a wikicat.Page object
     target
         The target category page to search for. It is a wikicat.Page object
-    
+
     Returns
     -------
     dict
@@ -52,7 +52,7 @@ def extract_chain(backlinks: dict, article: Page, target: Page) -> list:
         The article to start the search from. It is a wikicat.Page object
     target
         The target category page to search for. It is a wikicat.Page object
-    
+
     Returns
     -------
     list
@@ -100,10 +100,10 @@ def insert_artificial_root_node(cg: CategoryGraph, root_id: str):
     ----------
     cg
         A `wikicat.CategoryGraph` object. This object will be modified in-place.
-    
+
     root_id
         The id of the root node. This id should not be used by any other category.
-    
+
     Returns
     -------
     cg
@@ -112,7 +112,9 @@ def insert_artificial_root_node(cg: CategoryGraph, root_id: str):
     cg.id_to_title[root_id] = root_id
     cg.id_to_namespace[root_id] = "category"
     cg.title_to_id[CATEGORY][root_id] = root_id
-    cg.parents_to_children[root_id] = " ".join(cg.get_top_level_categories(return_as="id"))
+    cg.parents_to_children[root_id] = " ".join(
+        cg.get_top_level_categories(return_as="id")
+    )
     cg.children_to_parents[root_id] = ""
 
     return cg

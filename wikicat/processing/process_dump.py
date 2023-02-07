@@ -40,12 +40,12 @@ def process_dump(
         the batch size if you run out of memory while processing the dump.
     use_2018_schema : bool, optional
         Whether to use the 2018 schema for the page table, by default False.
-    
+
     Notes
     -----
     This step may take a while to run (1h+). It is recommended to run this
     script on a machine with a lot of RAM.
-    
+
     Example
     -------
     >>> # Process page.sql.gz into page.csv
@@ -112,7 +112,7 @@ def main(year, month, day, base_dir, use_2018_schema, batch_size, ignore_existin
     # default names for filepaths
     page_table_load_path = int_dir / "page.sql.gz"
     page_csv_save_path = int_dir / "page.csv"
-    
+
     category_table_load_path = int_dir / "categorylinks.sql.gz"
     cat_csv_save_path = int_dir / "categorylinks.csv"
 

@@ -110,7 +110,7 @@ def download_dump(
     if save_path.is_file() and not ignore_existing:
         print(f"File {save_path} already exists. Skipping.")
         out_path = save_path
-    
+
     else:
         print("Downloading:", dump_url)
         print("Saving to:", save_path)

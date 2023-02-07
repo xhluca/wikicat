@@ -1,11 +1,7 @@
 from typing import Dict, List
 import unicodedata
 
-from .constants import (
-    ARTICLE,
-    CATEGORY,
-    TOP_LEVEL_CATEGORIES
-)
+from .constants import ARTICLE, CATEGORY, TOP_LEVEL_CATEGORIES
 from .version import __version__
 
 ACCEPTED_NAMESPACES = ("article", "category")
@@ -33,7 +29,9 @@ def _namespace_to_code(namespace: str) -> str:
     elif namespace in (ARTICLE, CATEGORY):
         return namespace
     else:
-        raise ValueError(f"Invalid namespace={namespace}. Must be one of: {ACCEPTED_NAMESPACES}.")
+        raise ValueError(
+            f"Invalid namespace={namespace}. Must be one of: {ACCEPTED_NAMESPACES}."
+        )
 
 
 def _code_to_namespace(code: str) -> str:
@@ -85,7 +83,7 @@ class Page:
         """
         Represents a Wikipedia page. It should be used alongside CategoryGraph to
         represent a page in the graph. You can also use it to find the URL of a page.
-        
+
         Parameters
         ----------
         id
@@ -97,7 +95,7 @@ class Page:
         standardize_title
             Whether to standardize the title. If True, it will replace spaces with
             underscores and normalize the title to NFC form.
-        
+
         Examples
         --------
         >>> import wikicat as wc
@@ -131,7 +129,7 @@ class Page:
         -------
         str
             The representation of the page.
-        
+
         Examples
         --------
         >>> import wikicat as wc
@@ -207,7 +205,7 @@ class CategoryGraph:
         ----------
         graph_json
             The JSON object containing the category graph.
-        
+
         Examples
         --------
         >>> import json
@@ -253,7 +251,7 @@ class CategoryGraph:
         skip_error_checking: bool = False,
         namespace: str = None,
     ):
-        
+
         if not skip_error_checking:
             total_not_none = sum(x is not None for x in [page, id, title])
             if total_not_none == 0 or total_not_none > 1:
@@ -302,7 +300,7 @@ class CategoryGraph:
         -----
         This method uses orjson if it is available, otherwise it uses the standard json module.
         You can install orjson with `pip install orjson`.
-        
+
         """
         from importlib.util import find_spec
 
@@ -320,7 +318,7 @@ class CategoryGraph:
 
         return cls(graph_json)
 
-    def remove_hidden_ids(self, ids: 'list[str]') -> 'list[str]':
+    def remove_hidden_ids(self, ids: "list[str]") -> "list[str]":
         """
         Parameters
         ----------
@@ -618,7 +616,7 @@ class CategoryGraph:
         -------
         dict of {str: int}
             A dictionary mapping page IDs to their degree counts.
-        
+
         Examples
         --------
         >>> counts = cg.get_degree_counts()
@@ -649,7 +647,7 @@ class CategoryGraph:
 
     def rank_page_ids(
         self,
-        ids: 'list[str]',
+        ids: "list[str]",
         mode: str = "degree",
         ascending: bool = False,
         max_pages: int = None,
@@ -677,7 +675,7 @@ class CategoryGraph:
         -------
         list of str or Page
             The ranked pages, in the format specified by return_as.
-        
+
         Examples
         --------
         >>> page_ids = cg.get_parents(title="Computer", return_as='id')
@@ -697,8 +695,12 @@ class CategoryGraph:
         return self.__autoconvert_list_of_ids(ranked, return_as)
 
     def rank_pages(
-        self, pages: 'list[Page]', mode: str="degree", ascending: bool=False, max_pages: int=None
-    ) -> 'list[Page]':
+        self,
+        pages: "list[Page]",
+        mode: str = "degree",
+        ascending: bool = False,
+        max_pages: int = None,
+    ) -> "list[Page]":
         """
         Rank a list of Page objects.
 
@@ -719,7 +721,7 @@ class CategoryGraph:
         -------
         list of str or Page
             The ranked pages, in the format specified by return_as.
-        
+
         Examples
         --------
         >>> pages = cg.get_parents(title="Computer", return_as='page')
@@ -739,7 +741,7 @@ class CategoryGraph:
         return [self.get_page_from_id(page_id) for page_id in ranked_ids]
 
     def format_page_ids(
-        self, ids: 'list[str]', sep: str = "; ", replace_underscores: bool = True
+        self, ids: "list[str]", sep: str = "; ", replace_underscores: bool = True
     ) -> str:
         """
         Format a list of page IDs into a string that is human readable.
@@ -757,7 +759,7 @@ class CategoryGraph:
         -------
         str
             The formatted page IDs (in a human readable format).
-        
+
         Examples
         --------
         >>> page_ids = cg.get_parents(title="Computer", return_as='id')
@@ -771,7 +773,7 @@ class CategoryGraph:
 
     @staticmethod
     def format_pages(
-        pages: 'list[Page]', sep: str = "; ", replace_underscores: bool = True
+        pages: "list[Page]", sep: str = "; ", replace_underscores: bool = True
     ) -> str:
         """
         This static method formats a list of `Page` objects into a string that is human readable.
@@ -789,7 +791,7 @@ class CategoryGraph:
         -------
         str
             The formatted pages (in a human readable format).
-        
+
         Examples
         --------
         >>> pages = cg.get_parents(title="Computer", return_as='page')
