@@ -70,21 +70,15 @@ python3 -m wikicat.processing.download_dump \
 
 # 2. Process individual dumps (.sql.gz) into csv files (to be merged later)
 python3 -m wikicat.processing.process_dump \
-        --year <yyyy> \
-        --month <mm> \
-        --day <dd>
+        -y <yyyy> -m <mm> -d <dd>
 
 # 3. Merge the individual table csvs into a single category graph csv
 python3 -m wikicat.processing.merge_tables \
-        --year <yyyy> \
-        --month <mm> \
-        --day <dd>
+        -y <yyyy> -m <mm> -d <dd>
 
-# 4. Convert CSV category graph into JSON category graph (which is the final output)
+# 4. Convert CSV category graph into JSON category graph (the final output)
 python3 -m wikicat.processing.generate_graph \
-        --year <yyyy> \
-        --month <mm> \
-        --day <dd>
+        -y <yyyy> -m <mm> -d <dd>
 ```
 
 Notes (by step):
@@ -109,9 +103,7 @@ pip3 install wikicat[viewer]
 To run the viewer, run:
 
 ```bash
-python3 -m wikicat.viewer \
-        --load_name "~/.wikicat_data/enwiki_<yyyy>_<mm>_<dd>/category_graph.json" \
-        --port 8050
+python3 -m wikicat.viewer -y <yyyy> -m <mm> -d <dd> --port 8050
 ```
 
 Then, open your browser to `http://0.0.0.0:8050`.
