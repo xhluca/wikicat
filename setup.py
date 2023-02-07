@@ -42,7 +42,7 @@ setup(
         # dependencies here
     ],
     extras_require={
-        "dev": ["black", "wheel"],
+        "dev": ["black==23.*", "wheel"],
         "viewer": viewer_requirements,
         "processing": processing_requirements,
     },
