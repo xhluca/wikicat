@@ -65,34 +65,32 @@ Now, following those instructions to download and process the data:
 python3 -m wikicat.processing.download_dump \
         --year <yyyy> \
         --month <mm> \
-        --day <dd>
+        --day <dd> \
+        --base_dir ~/.wikicat_data/  # optional, default is ~/.wikicat_data/
 
 # 2. Process individual dumps (.sql.gz) into csv files (to be merged later)
 python3 -m wikicat.processing.process_dump \
         --year <yyyy> \
         --month <mm> \
-        --day <dd> \
-        --base_dir ~/.wikicat_data/
+        --day <dd>
 
 # 3. Merge the individual table csvs into a single category graph csv
 python3 -m wikicat.processing.merge_tables \
         --year <yyyy> \
         --month <mm> \
-        --day <dd> \
-        --base_dir ~/.wikicat_data/
+        --day <dd>
 
 # 4. Convert CSV category graph into JSON category graph (which is the final output)
 python3 -m wikicat.processing.generate_graph \
         --year <yyyy> \
         --month <mm> \
         --day <dd>
-        --base_dir ~/.wikicat_data/
 ```
 
 Notes (by step):
 1. If you do not specify `--base_dir`, it will automatically be saved to `~/.wikicat_data/enwiki_<yyyy>_<mm>_<dd>`. 
-2. This may take a while depending on your hardware, and will need plenty of RAM. It will output two csvs with the relevant tables' data to your `save_dir`.
-3. This should take under 30 mins depending on your hardware, and will output a single csv with the relevant category graph links to your `save_dir`.
+2. This may take a while depending on your hardware, and will need plenty of RAM. It will generate two CSV files with the relevant tables.
+3. This should take under 30 mins depending on your hardware, and will generate a single CSV file with the relevant category graph links.
 4. The results will be saved in `~/.wikicat_data/enwiki_<yyyy>_<mm>_<dd>/category_graph.json`.
 
 
