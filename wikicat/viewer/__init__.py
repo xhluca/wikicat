@@ -21,6 +21,7 @@ def assign_callbacks(
     `id` attributes. It also takes in the `cg` argument to access the `CategoryGraph` object
     and the `root` argument to access the root node id.
     """
+
     # Define callbacks
     @app.callback(
         Output(inp.choose_article, "valid"),
@@ -245,12 +246,12 @@ def build_app(
     Builds the Dash app. The app is a Dash app with a Cytoscape graph, a panel with
     buttons, inputs, dropdowns, checklists and markdowns, and a store for the selected
     nodes. The app is built using the components defined in the components module.
-    It can be started by using the `wikicat.viewer.run()` function. By default, 
+    It can be started by using the `wikicat.viewer.run()` function. By default,
     it will use the bootstrap style.
     """
     if style is None:
         style = dbc.themes.BOOTSTRAP
-    
+
     ROOT_ID = "((ROOT))"
     cg = utils.insert_artificial_root_node(cg, ROOT_ID)
     root = cg.get_page_from_id(ROOT_ID)
@@ -284,6 +285,30 @@ def run(load_dir, load_name, port=8050, host="0.0.0.0", debug=True, app=None):
     """
     Runs the app. If `app` is None, a new app is built. Otherwise, the given app is
     used. The app is built using the `wikicat.viewer.build_app()` function.
+
+    Parameters
+    ----------
+    load_dir : str
+        Directory where the category graph is stored. If you used `wikicat.processing`,
+        then the directory should be `~/.wikicat_data/enwiki_2018_12_20`.
+    load_name : str
+        Name of the category graph file. If you used `wikicat.processing`, then
+        the file is called `category_graph.json`.
+    port : int, optional
+        Port to run the app on, by default 8050 following the Dash convention.
+    host : str, optional
+        Host to run the app on, by default "0.0.0.0" to make it accessible from
+        other devices on the network.
+    debug : bool, optional
+        Whether to run the app in debug mode, by default True
+
+    Example
+    -------
+    >>> import wikicat.viewer as viewer
+    >>> app = viewer.build_app()
+    >>> viewer.run(
+    ...     load_dir="~/.wikicat_data/enwiki_2018_12_20", load_name="category_graph.json", app=app
+    ... )
     """
     # Load category graph and insert artificial root node
     load_dir = Path(load_dir).expanduser()

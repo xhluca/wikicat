@@ -25,7 +25,7 @@ wikicat.viewer.build_app(cg, title="Wikipedia Categories Explorer", style=None)
 Builds the Dash app. The app is a Dash app with a Cytoscape graph, a panel with
 buttons, inputs, dropdowns, checklists and markdowns, and a store for the selected
 nodes. The app is built using the components defined in the components module.
-It can be started by using the `wikicat.viewer.run()` function. By default, 
+It can be started by using the `wikicat.viewer.run()` function. By default,
 it will use the bootstrap style.
 
 ## `run`
@@ -38,6 +38,26 @@ wikicat.viewer.run(load_dir, load_name, port=8050, host="0.0.0.0", debug=True, a
 
 Runs the app. If `app` is None, a new app is built. Otherwise, the given app is
 used. The app is built using the `wikicat.viewer.build_app()` function.
+
+
+#### Parameters
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| `load_dir` | `str` |  | Directory where the category graph is stored. If you used `wikicat.processing`, then the directory should be `~/.wikicat_data/enwiki_2018_12_20`. |
+| `load_name` | `str` |  | Name of the category graph file. If you used `wikicat.processing`, then the file is called `category_graph.json`. |
+| `port` | `int` | `8050` | Port to run the app on, by default 8050 following the Dash convention. |
+| `host` | `str` | `"0.0.0.0"` | Host to run the app on, by default "0.0.0.0" to make it accessible from other devices on the network. |
+| `debug` | `bool` | `True` | Whether to run the app in debug mode, by default True |
+
+
+#### Example
+
+>>> import wikicat.viewer as viewer
+>>> app = viewer.build_app()
+>>> viewer.run(
+...     load_dir="~/.wikicat_data/enwiki_2018_12_20", load_name="category_graph.json", app=app
+... )
 
 # Reference for `wikicat.viewer.__main__`
 
@@ -65,6 +85,12 @@ argparse.ArgumentParser
 ```
 
 The argument parser for the `wikicat.viewer` module.
+
+## `main`
+
+```python
+wikicat.viewer.__main__.main(base_dir, year, month, day, port, host, debug)
+```
 
 # Reference for `wikicat.viewer.components`
 
@@ -254,7 +280,7 @@ wikicat.viewer.utils.bfs_with_backlinks(cg, article, target)
 
 #### Description
 
-Breadth-first search with backlinks. Returns a dictionary of {child: parent} pairs, 
+Breadth-first search with backlinks. Returns a dictionary of {child: parent} pairs,
 linking the target category to the article. It does not necessarily return the shortest path.
 This function is meant to be used with the `extract_chain` function.
 
