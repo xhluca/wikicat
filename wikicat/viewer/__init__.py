@@ -284,6 +284,30 @@ def run(load_dir, load_name, port=8050, host="0.0.0.0", debug=True, app=None):
     """
     Runs the app. If `app` is None, a new app is built. Otherwise, the given app is
     used. The app is built using the `wikicat.viewer.build_app()` function.
+
+    Parameters
+    ----------
+    load_dir : str
+        Directory where the category graph is stored. If you used `wikicat.processing`,
+        then the directory should be `~/.wikicat_data/enwiki_2018_12_20`.
+    load_name : str
+        Name of the category graph file. If you used `wikicat.processing`, then
+        the file is called `category_graph.json`.
+    port : int, optional
+        Port to run the app on, by default 8050 following the Dash convention.
+    host : str, optional
+        Host to run the app on, by default "0.0.0.0" to make it accessible from
+        other devices on the network.
+    debug : bool, optional
+        Whether to run the app in debug mode, by default True
+
+    Example
+    -------
+    >>> import wikicat.viewer as viewer
+    >>> app = viewer.build_app()
+    >>> viewer.run(
+    ...     load_dir="~/.wikicat_data/enwiki_2018_12_20", load_name="category_graph.json", app=app
+    ... )
     """
     # Load category graph and insert artificial root node
     load_dir = Path(load_dir).expanduser()
