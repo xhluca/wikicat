@@ -48,13 +48,20 @@ def generate_graph(df) -> dict:
     Returns
     -------
     dict
-        The graph JSON file. 
+        The graph JSON file.
 
     Notes
     -----
     - <id> is a string (the curid used by Wikipedia)
     - <title> is a string (the standardized title used by Wikipedia)
     - <type> is an int, either 0 (article) or 14 (category)
+
+    Example
+    -------
+    >>> df = pd.read_csv("~/.wikicat_data/enwiki_2018_12_20/full_catgraph.csv")
+    >>> graph = generate_graph(df)
+    >>> with open("~/.wikicat_data/enwiki_2018_12_20/category_graph.json", "w") as f:
+    >>>     json.dump(graph, f)
     """
     df = df.copy()
 
@@ -85,14 +92,10 @@ def generate_graph(df) -> dict:
 
     def encode_data(data):
         return " ".join([str(x) for x in list(data)])
-    
+
     # Create children to parents mapping and parents to children mapping
-    children_to_parents = (
-        df.groupby("page_id")["cl_id"].apply(encode_data).to_dict()
-    )
-    parents_to_children = (
-        df.groupby("cl_id")["page_id"].apply(encode_data).to_dict()
-    )
+    children_to_parents = df.groupby("page_id")["cl_id"].apply(encode_data).to_dict()
+    parents_to_children = df.groupby("cl_id")["page_id"].apply(encode_data).to_dict()
 
     # Convert to strings
     id_to_title = {k: v for k, v in id_to_title.items()}
@@ -110,32 +113,21 @@ def generate_graph(df) -> dict:
     return graph_json
 
 
-def main(year, month, day, base_dir, load_dir, save_dir, load_name, save_name):
+def main(year, month, day, base_dir):
     import pandas as pd
 
-    if load_name == "None":
-        load_name = f"full_catgraph.csv"
-    if save_name == "None":
-        save_name = f"category_graph.json"
-    
     base_dir = Path(base_dir).expanduser()
-    base_dir.mkdir(parents=True, exist_ok=True)
+    int_dir = base_dir / f"enwiki_{year}_{month:02d}_{day:02d}"
 
-    int_dir = base_dir / f"enwiki_{year}{month:02d}{day:02d}"
-    int_dir.mkdir(exist_ok=True)
+    if not int_dir.exists():
+        raise ValueError(
+            f"Intermediate directory {int_dir} does not exist. Make run all previous scripts before this one."
+        )
 
-    # default names for filepath arguments
-    if load_dir == "None":
-        load_dir = int_dir
-
-    if save_dir == "None":
-        save_dir = int_dir
-
-    raw_df = pd.read_csv(load_dir / load_name, na_filter=False)
-
+    raw_df = pd.read_csv(int_dir / "full_catgraph.csv", na_filter=False)
     graph_json = generate_graph(raw_df)
 
-    with open(save_dir / save_name, "w") as f:
+    with open(int_dir / "category_graph.json", "w") as f:
         json.dump(graph_json, f)
 
 
@@ -148,29 +140,14 @@ def parse_args():
         """,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    parser.add_argument("--year", type=int, required=True, help="Year of the dump")
-    parser.add_argument("--month", type=int, required=True, help="Month of the year")
-    parser.add_argument("--day", type=int, required=True, help="Day of the month")
+    parser.add_argument("--year", "-y", type=int, required=True, help="Year of dump")
+    parser.add_argument("--month", "-m", type=int, required=True, help="Month of dump")
+    parser.add_argument("--day", "-d", type=int, required=True, help="Day of dump")
     parser.add_argument(
-        "--base_dir", type=str, help="Base directory for intermediate files", default="~/.wikicat_data"
-    )
-    parser.add_argument(
-        "--load_dir", type=str, help="Directory to load the raw CSV file from", default="None"
-    )
-    parser.add_argument(
-        "--save_dir", type=str, help="Directory to save the JSON file to", default="None"
-    )
-    parser.add_argument(
-        "--load_name",
+        "--base_dir",
         type=str,
-        default="None",
-        help="Name of the raw CSV file",
-    )
-    parser.add_argument(
-        "--save_name",
-        type=str,
-        default="None",
-        help="Name of the JSON file",
+        help="Base directory for intermediate files",
+        default="~/.wikicat_data",
     )
     return parser.parse_args()
 

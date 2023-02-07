@@ -14,9 +14,11 @@ def parse_args():
         """,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    parser.add_argument("--year", type=int, required=True, help="Year of the dump")
-    parser.add_argument("--month", type=int, required=True, help="Month of the year")
-    parser.add_argument("--day", type=int, required=True, help="Day of the month")
+
+    parser.add_argument("--year", "-y", type=int, required=True, help="Year of dump")
+    parser.add_argument("--month", "-m", type=int, required=True, help="Month of dump")
+    parser.add_argument("--day", "-d", type=int, required=True, help="Day of dump")
+
     parser.add_argument(
         "--base_url",
         type=str,
@@ -24,15 +26,9 @@ def parse_args():
         help="Base URL of the dump file",
     )
     parser.add_argument(
-        "--name_prefix",
+        "--base_dir",
         type=str,
-        default="enwiki-",
-        help="Prefix of the dump file name",
-    )
-    parser.add_argument(
-        "--save_dir",
-        type=str,
-        help="Directory to save the JSON file to",
+        help="Directory where a new directory will be created to store the dump files. The directory name will be in the format of enwiki_<YYYY>_<MM>_<DD>.",
         default="~/.wikicat_data",
     )
 
@@ -41,32 +37,101 @@ def parse_args():
 
 # prepare progressbar
 def show_progress(block_num, block_size, total_size):
-    print(round(block_num * block_size / total_size *100,2), end="\r")
+    perc = round(block_num * block_size / total_size * 100, 2)
+    print(f"{perc}%", end="\r")
 
-def main(
+
+def download_dump(
     year,
     month,
     day,
-    save_dir,
+    base_dir,
+    postfix,
+    prefix="enwiki-",
+    extension="sql.gz",
     base_url="https://archive.org/download/",
-    name_prefix="enwiki-",
+    ignore_existing=False,
 ):
-    postfix = ("-page", "-categorylinks")
-    save_dir = Path(save_dir).expanduser()
-    save_dir = save_dir / f"enwiki_{year}{month:02d}{day:02d}"
-    save_dir.mkdir(parents=True, exist_ok=True)
+    """
+    Download the SQL dump of the English Wikipedia from archive.org. The files are gzipped SQL file that
+    contains the page and categoryliniks tables. To find the list, visit:
+    https://archive.org/search.php?query=creator%3A%22Wikimedia+projects+editors%22+%22Wikimedia+database+dump+of+the+English+Wikipedia%22&sort=-date
+
+    Parameters
+    ----------
+    year : int
+        Year of the dump
+    month : int
+        Month of the year
+    day : int
+        Day of the month
+    base_dir : str
+        Directory where a new directory will be created to store the dump files. The directory
+        name will be in the format of enwiki_<YYYY>_<MM>_<DD>.
+    base_url : str, optional
+        Base URL of the dump file, by default "https://archive.org/download/"
+    prefix : str, optional
+        Prefix of the dump file, by default "enwiki-"
+    postfix : str
+        Postfix of the dump file, should either be "-page" or "-categorylinks"
+    extension : str, optional
+        Extension of the dump file, by default "sql.gz"
+    ignore_existing : bool, optional
+        Whether to ignore existing files, by default False
+
+    Returns
+    -------
+    Path
+        Path to the downloaded file
+    Notes
+    -----
+    By default, the downloaded file will be saved to
+    ```
+    <base_dir>/<prefix>enwiki_<YYYY>_<MM>_<DD><postfix>.<extension>
+    ```
+    """
+    base_dir = Path(base_dir).expanduser()
+    base_dir = base_dir / f"enwiki_{year}_{month:02d}_{day:02d}"
+    base_dir.mkdir(parents=True, exist_ok=True)
 
     # Format the URL
-    base_name = f"{name_prefix}{year}{month:02d}{day:02d}"
-    extension = "sql.gz"
+    dump_base_name = f"{prefix}{year}{month:02d}{day:02d}"
 
-    for p in postfix:
-        dump_name = f"{base_name}{p}.{extension}"
-        dump_url = f"{base_url}{base_name}/{dump_name}"
+    dump_full_name = f"{dump_base_name}{postfix}.{extension}"
+    save_filename = Path(f"{postfix.strip('-')}.{extension}")
+    dump_url = f"{base_url}{dump_base_name}/{dump_full_name}"
+    save_path = base_dir / save_filename
+
+    if save_filename.is_file() and not ignore_existing:
+        print(f"File {save_filename} already exists. Skipping.")
+        return save_path
+    else:
         print("Downloading:", dump_url)
-        dump_path = save_dir / dump_name
+        print("Saving to:", save_path)
 
-        urlretrieve(dump_url, dump_path, show_progress)
+        out_path, headers = urlretrieve(dump_url, save_path, show_progress)
+        out_path = Path(out_path)
+
+        print("Done.")
+        print("Saved to:", out_path)
+        print("Size:", out_path.stat().st_size)
+        print("Result headers:", json.dumps(headers, indent=2))
+
+    print("\n====================================\n")
+
+    return out_path
+
+
+def main(year, month, day, base_dir, base_url):
+    for p in ["-page", "-categorylinks"]:
+        download_dump(
+            year=year,
+            month=month,
+            day=day,
+            base_dir=base_dir,
+            base_url=base_url,
+            postfix=p,
+        )
 
 
 if __name__ == "__main__":
