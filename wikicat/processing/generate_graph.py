@@ -113,13 +113,13 @@ def generate_graph(df) -> dict:
     return graph_json
 
 
-def main(year, month, day, base_dir):
+def main(year, month, day, base_dir, ignore_existing):
     import pandas as pd
 
     base_dir = Path(base_dir).expanduser()
     int_dir = base_dir / f"enwiki_{year}_{month:02d}_{day:02d}"
 
-    if not int_dir.exists():
+    if not int_dir.exists() and not ignore_existing:
         raise ValueError(
             f"Intermediate directory {int_dir} does not exist. Make run all previous scripts before this one."
         )
@@ -146,8 +146,13 @@ def parse_args():
     parser.add_argument(
         "--base_dir",
         type=str,
-        help="Base directory for intermediate files",
+        help="Base directory for all data",
         default="~/.wikicat_data",
+    )
+    parser.add_argument(
+        "--ignore_existing",
+        action="store_true",
+        help="Ignore cached output file. Only do this if you previous generated the file and want to regenerate it.",
     )
     return parser.parse_args()
 

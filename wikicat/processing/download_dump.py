@@ -31,6 +31,11 @@ def parse_args():
         help="Directory where a new directory will be created to store the dump files. The directory name will be in the format of enwiki_<YYYY>_<MM>_<DD>.",
         default="~/.wikicat_data",
     )
+    parser.add_argument(
+        "--ignore_existing",
+        action="store_true",
+        help="Ignore cached output file. Only do this if you previous downloaded the file and want to redownload it.",
+    )
 
     return parser.parse_args()
 
@@ -98,13 +103,14 @@ def download_dump(
     dump_base_name = f"{prefix}{year}{month:02d}{day:02d}"
 
     dump_full_name = f"{dump_base_name}{postfix}.{extension}"
-    save_filename = Path(f"{postfix.strip('-')}.{extension}")
+    save_filename = f"{postfix.strip('-')}.{extension}"
     dump_url = f"{base_url}{dump_base_name}/{dump_full_name}"
     save_path = base_dir / save_filename
 
-    if save_filename.is_file() and not ignore_existing:
-        print(f"File {save_filename} already exists. Skipping.")
-        return save_path
+    if save_path.is_file() and not ignore_existing:
+        print(f"File {save_path} already exists. Skipping.")
+        out_path = save_path
+    
     else:
         print("Downloading:", dump_url)
         print("Saving to:", save_path)
@@ -115,14 +121,14 @@ def download_dump(
         print("Done.")
         print("Saved to:", out_path)
         print("Size:", out_path.stat().st_size)
-        print("Result headers:", json.dumps(headers, indent=2))
+        print("Result headers:", headers)
 
     print("\n====================================\n")
 
     return out_path
 
 
-def main(year, month, day, base_dir, base_url):
+def main(year, month, day, base_dir, base_url, ignore_existing):
     for p in ["-page", "-categorylinks"]:
         download_dump(
             year=year,
@@ -131,6 +137,7 @@ def main(year, month, day, base_dir, base_url):
             base_dir=base_dir,
             base_url=base_url,
             postfix=p,
+            ignore_existing=ignore_existing,
         )
 
 

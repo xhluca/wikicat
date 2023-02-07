@@ -104,7 +104,7 @@ def process_dump(
         ] = original_col_list
 
 
-def main(year, month, day, base_dir, use_2018_schema, batch_size):
+def main(year, month, day, base_dir, use_2018_schema, batch_size, ignore_existing):
     base_dir = Path(base_dir).expanduser()
     int_dir = base_dir / f"enwiki_{year}_{month:02d}_{day:02d}"
     int_dir.mkdir(parents=True, exist_ok=True)
@@ -120,7 +120,7 @@ def main(year, month, day, base_dir, use_2018_schema, batch_size):
     if use_2018_schema == "auto":
         use_2018_schema = "2018" == str(year)
 
-    if page_csv_save_path.is_file():
+    if page_csv_save_path.is_file() and not ignore_existing:
         print(f"Skipping {page_csv_save_path}, already exists...")
     else:
         process_dump(
@@ -129,7 +129,7 @@ def main(year, month, day, base_dir, use_2018_schema, batch_size):
             use_2018_schema=use_2018_schema,
             batch_size=batch_size,
         )
-    if cat_csv_save_path.is_file():
+    if cat_csv_save_path.is_file() and not ignore_existing:
         print(f"Skipping {cat_csv_save_path}, already exists...")
     else:
         process_dump(
@@ -171,6 +171,11 @@ def parse_args():
         type=int,
         help="Adjust the batch size for the processing. Increasing this will use more memory but will be faster.",
         default=1_000_000,
+    )
+    parser.add_argument(
+        "--ignore_existing",
+        action="store_true",
+        help="Ignore cached output file. Only do this if you previous generated the file and want to regenerate it.",
     )
 
     return parser.parse_args()

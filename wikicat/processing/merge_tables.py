@@ -29,17 +29,17 @@ def merge_tables(page_csv_filepath, category_csv_filepath):
         Path to the page CSV file.
     category_csv_filepath : str
         Path to the category CSV file.
-    
+
     Returns
     -------
     pandas.DataFrame
         The merged table.
-    
+
     Notes
     -----
     This step may take a while to run (1h+). It is recommended to run this
     script on a machine with a lot of RAM.
-    
+
     Example
     -------
     >>> page_csv_filepath = "~/.wikicat_data/enwiki_2018_12_20/page.csv"
@@ -75,19 +75,16 @@ def merge_tables(page_csv_filepath, category_csv_filepath):
     return full_df
 
 
-def main(
-    year,
-    month,
-    day,
-    base_dir,
-):
+def main(year, month, day, base_dir, ignore_existing):
     base_dir = Path(base_dir).expanduser()
     base_dir.mkdir(parents=True, exist_ok=True)
 
     int_dir = base_dir / f"enwiki_{year}_{month:02d}_{day:02d}"
-    
-    if not int_dir.is_dir():
-        raise ValueError(f"Intermediate directory {int_dir} does not exist. Make sure to run the download_dump.py script first.")
+
+    if not int_dir.is_dir() and not ignore_existing:
+        raise ValueError(
+            f"Intermediate directory {int_dir} does not exist. Make sure to run the download_dump.py script first."
+        )
 
     # default names for filepath arguments
     page_csv_load_path = int_dir / "page.csv"
@@ -119,8 +116,13 @@ def parse_args():
     parser.add_argument(
         "--base_dir",
         type=str,
-        help="Base directory for intermediate files",
+        help="The directory containing a directory in the form enwiki_<YYYY>_<MM>_<DD>. The latter contains the dumps and your output file will be stored there.",
         default="~/.wikicat_data",
+    )
+    parser.add_argument(
+        "--ignore_existing",
+        action="store_true",
+        help="Ignore cached output file. Only do this if you previous generated the file and want to regenerate it.",
     )
 
     return parser.parse_args()
