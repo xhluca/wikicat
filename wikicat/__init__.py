@@ -251,7 +251,6 @@ class CategoryGraph:
         skip_error_checking: bool = False,
         namespace: str = None,
     ):
-
         if not skip_error_checking:
             total_not_none = sum(x is not None for x in [page, id, title])
             if total_not_none == 0 or total_not_none > 1:

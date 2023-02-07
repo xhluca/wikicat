@@ -21,6 +21,7 @@ def assign_callbacks(
     `id` attributes. It also takes in the `cg` argument to access the `CategoryGraph` object
     and the `root` argument to access the root node id.
     """
+
     # Define callbacks
     @app.callback(
         Output(inp.choose_article, "valid"),
