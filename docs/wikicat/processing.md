@@ -222,12 +222,12 @@ script on a machine with a lot of RAM.
 #### Example
 
 >>> # Process page.sql.gz into page.csv
->>> dumpfile = "~/.wikicat_data/enwiki_2018_12_20/page.sql.gz"
+>>> dumpfile = "~/.wikicat_data/enwiki_2018_12_20/enwiki-20181220-page.sql.gz"
 >>> output_filename = "~/.wikicat_data/enwiki_2018_12_20/page.csv"
 >>> process_dump(dumpfile, output_filename, use_2018_schema=True, batch_size=10_000_000)
 >>>
 >>> # Process categorylinks.sql.gz into categorylinks.csv
->>> dumpfile = "~/.wikicat_data/enwiki_2018_12_20/categorylinks.sql.gz"
+>>> dumpfile = "~/.wikicat_data/enwiki_2018_12_20/enwiki-20181220-categorylinks.sql.gz"
 >>> output_filename = "~/.wikicat_data/enwiki_2018_12_20/categorylinks.csv"
 >>> process_dump(dumpfile, output_filename, use_2018_schema=True, batch_size=10_000_000)
 

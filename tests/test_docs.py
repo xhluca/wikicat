@@ -19,7 +19,7 @@ class TestDocs(unittest.TestCase):
             doc_page = doc_build.build_docs(sources_globed)
             error_msg = """
             The generated documentation page does not match the expected output.
-            Please run `python scripts/docs.py` to update the documentation.
+            Please rebuild the documentation following CONTRIBUTING.md
             """
 
             with open(target, "r") as f:
