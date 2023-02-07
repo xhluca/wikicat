@@ -49,22 +49,25 @@ def process_dump(
     Example
     -------
     >>> # Process page.sql.gz into page.csv
-    >>> dumpfile = "~/.wikicat_data/enwiki_2018_12_20/page.sql.gz"
+    >>> dumpfile = "~/.wikicat_data/enwiki_2018_12_20/enwiki-20181220-page.sql.gz"
     >>> output_filename = "~/.wikicat_data/enwiki_2018_12_20/page.csv"
     >>> process_dump(dumpfile, output_filename, use_2018_schema=True, batch_size=10_000_000)
     >>>
     >>> # Process categorylinks.sql.gz into categorylinks.csv
-    >>> dumpfile = "~/.wikicat_data/enwiki_2018_12_20/categorylinks.sql.gz"
+    >>> dumpfile = "~/.wikicat_data/enwiki_2018_12_20/enwiki-20181220-categorylinks.sql.gz"
     >>> output_filename = "~/.wikicat_data/enwiki_2018_12_20/categorylinks.csv"
     >>> process_dump(dumpfile, output_filename, use_2018_schema=True, batch_size=10_000_000)
     """
     dumpfile = str(dumpfile)
     output_filename = str(output_filename)
 
-    if use_2018_schema.lower() == "true":
-        use_2018_schema = True
-    elif use_2018_schema.lower() == "false":
-        use_2018_schema = False
+    if isinstance(use_2018_schema, str):
+        if use_2018_schema.lower() == "true":
+            use_2018_schema = True
+        elif use_2018_schema.lower() == "false":
+            use_2018_schema = False
+        elif use_2018_schema.lower() == "auto":
+            use_2018_schema = "2018" in dumpfile
 
     if not isinstance(use_2018_schema, bool):
         raise ValueError(
@@ -110,10 +113,12 @@ def main(year, month, day, base_dir, use_2018_schema, batch_size, ignore_existin
     int_dir.mkdir(parents=True, exist_ok=True)
 
     # default names for filepaths
-    page_table_load_path = int_dir / "page.sql.gz"
+    prefix = f"enwiki-{year}{month:02d}{day:02d}-"
+
+    page_table_load_path = int_dir / f"{prefix}page.sql.gz"
     page_csv_save_path = int_dir / "page.csv"
 
-    category_table_load_path = int_dir / "categorylinks.sql.gz"
+    category_table_load_path = int_dir / f"{prefix}categorylinks.sql.gz"
     cat_csv_save_path = int_dir / "categorylinks.csv"
 
     # fix issue with argparse booleans
@@ -149,9 +154,9 @@ def parse_args():
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
-    parser.add_argument("--year", type=int, required=True, help="Year of the dump")
-    parser.add_argument("--month", type=int, required=True, help="Month of the year")
-    parser.add_argument("--day", type=int, required=True, help="Day of the month")
+    parser.add_argument("--year", "-y", type=int, required=True, help="Year of dump")
+    parser.add_argument("--month", "-m", type=int, required=True, help="Month of dump")
+    parser.add_argument("--day", "-d", type=int, required=True, help="Day of dump")
 
     parser.add_argument(
         "--base_dir",

@@ -101,11 +101,9 @@ def download_dump(
 
     # Format the URL
     dump_base_name = f"{prefix}{year}{month:02d}{day:02d}"
-
     dump_full_name = f"{dump_base_name}{postfix}.{extension}"
-    save_filename = f"{postfix.strip('-')}.{extension}"
     dump_url = f"{base_url}{dump_base_name}/{dump_full_name}"
-    save_path = base_dir / save_filename
+    save_path = base_dir / dump_full_name
 
     if save_path.is_file() and not ignore_existing:
         print(f"File {save_path} already exists. Skipping.")
