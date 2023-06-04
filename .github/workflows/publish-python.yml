@@ -8,26 +8,14 @@ on:
     types: [created]
 
 jobs:
-  update_version_and_publish_to_pypi:
-    name: Bump version and upload release to PyPI
-
+  pypi-publish:
+    name: upload release to PyPI
     runs-on: ubuntu-latest
     permissions:
       # IMPORTANT: this permission is mandatory for trusted publishing
       id-token: write
-
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.8'
-    
-    - name: Update version.py with release tag
-      env:
-        RELEASE_TAG: ${{ github.event.release.tag_name }}
-      run: |
-        python .github/scripts/python/update_version.py --version $RELEASE_TAG --path "wikicat/version.py"
-    
-    - name: Publish package distributions to PyPI
-      uses: pypa/gh-action-pypi-publish@release/v1
+      # retrieve your distributions here
+
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
