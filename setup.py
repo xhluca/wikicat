@@ -34,6 +34,9 @@ setup(
     url="https://xhluca.github.io/wikicat",
     description="Toolkit for managing and navigating graphs of Wikipedia categories",
     long_description=long_description,
+    long_description_content_type="text/markdown",
+    license="MIT",
+    python_requires=">=3.7",
     packages=find_packages(
         include=["wikicat*"],
         exclude=["tests*", "scripts*"],
