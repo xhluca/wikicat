@@ -27,7 +27,7 @@ jobs:
       env:
         RELEASE_TAG: ${{ github.event.release.tag_name }}
       run: |
-        python .github/scripts/python/update_version.py --version $RELEASE_TAG --path "retrieval/version.py"
+        python .github/scripts/python/update_version.py --version $RELEASE_TAG --path "wikicat/version.py"
     
     - name: Build and publish
       env:
