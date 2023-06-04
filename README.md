@@ -165,3 +165,9 @@ See the `wikicat.viewer.build_app()` function for more details.
 ## Warning
 
 Because of the size of the graph, some parts of the API (such as the viewer and the processing CLI) require a lot of memory. We recommend using a machine with at least 32 GB of RAM. We are working on a more memory-efficient version of the API.
+
+## Alternatives
+
+`wikicat` was designed for offline and high-throughput workflows, with support for different versions of Wikipedia (as categories change over time). As a result, there's a high overhead (long build time and high RAM usage). If this is not what you are looking for, you can check out alternatives to this library:
+* [MediaWiki](https://www.mediawiki.org/wiki/MediaWiki): This is Wikipedia's web API, and contains documentations for accessing categories (see [API:Categories](https://www.mediawiki.org/wiki/API:Categories) and [API:Categorymembers](https://www.mediawiki.org/wiki/API:Categorymembers))
+* [Wikipedia Histories](https://github.com/ndrezn/wikipedia-histories): This library contains a [domain-level analysis](https://github.com/ndrezn/wikipedia-histories/#domain-level-analysis) module that allows you to query articles associated with a certain category. Since it utilizes the Wikipedia Web API, it does not have the same overhead.
